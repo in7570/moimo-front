@@ -1,7 +1,9 @@
 import { http, HttpResponse, delay } from 'msw';
 
+const httpUrl = import.meta.env.VITE_API_URL;
+
 // 로그인 핸들러
-export const login = http.post('/users/login', async ({ request }) => {
+export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => {
     const { email, password } = (await request.json()) as any;
     await delay(1000);
 
@@ -23,13 +25,13 @@ export const login = http.post('/users/login', async ({ request }) => {
 });
 
 // 회원가입 핸들러
-export const join = http.post('/users/join', async () => {
+export const join = http.post(`${httpUrl}/users/join`, async () => {
     await delay(1000);
     return HttpResponse.json({ message: "회원가입이 완료되었습니다." });
 });
 
 // 이메일 중복 확인
-export const checkEmail = http.post('/users/check-email', async ({ request }) => {
+export const checkEmail = http.post(`${httpUrl}/users/check-email`, async ({ request }) => {
     const { email } = (await request.json()) as any;
     await delay(500);
 
@@ -43,7 +45,7 @@ export const checkEmail = http.post('/users/check-email', async ({ request }) =>
 });
 
 // 닉네임 중복 확인
-export const checkNickname = http.post('/users/check-nickname', async ({ request }) => {
+export const checkNickname = http.post(`${httpUrl}/users/check-nickname`, async ({ request }) => {
     const { nickname } = (await request.json()) as any;
     await delay(500);
 
@@ -57,19 +59,19 @@ export const checkNickname = http.post('/users/check-nickname', async ({ request
 });
 
 // 비밀번호 찾기
-export const findPassword = http.post('/users/passwordFind', async () => {
+export const findPassword = http.post(`${httpUrl}/users/passwordFind`, async () => {
     await delay(1000);
     return HttpResponse.json({ message: "비밀번호 재설정 이메일이 발송되었습니다." });
 });
 
 // 비밀번호 재설정
-export const resetPassword = http.post('/users/passwordReset', async () => {
+export const resetPassword = http.post(`${httpUrl}/users/passwordReset`, async () => {
     await delay(1000);
     return HttpResponse.json({ message: "비밀번호가 성공적으로 변경되었습니다." });
 });
 
 // 구글 로그인
-export const googleLogin = http.post('/users/login/google', async () => {
+export const googleLogin = http.post(`${httpUrl}/users/login/google`, async () => {
     await delay(1000);
     return HttpResponse.json({
         user: {
