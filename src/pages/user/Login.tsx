@@ -3,9 +3,59 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router-dom";
+import { useLoginMutation } from "@/hooks/useAuthMutations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import * as z from "zod";
+
+// zod schema 정의
+export const loginSchema = z.object({
+    email: z
+        .string()
+        .min(1, "이메일을 입력해주세요.")
+        .email("이메일 형식이 올바르지 않습니다."),
+    password: z
+        .string()
+        .min(1, "비밀번호를 입력해주세요.")
+        .min(8, "비밀번호는 최소 8자 이상이어야 합니다."),
+});
+
+// zod schema에서 추출한 타입
+export type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
+    const { mutateAsync: loginMutation, isPending } = useLoginMutation();
+    const navigate = useNavigate();
+
+    // react-hook-form 사용
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors }
+    } = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: "",
+            password: ""
+        }
+    });
+
+    const onSubmit = async (data: LoginFormValues) => {
+        try {
+            await loginMutation(data);
+            navigate("/");
+        } catch (error: any) {
+            setError("root",
+                {
+                    type: "manual",
+                    message: error.response?.data?.message || "로그인에 실패했습니다"
+                }
+            );
+        }
+    };
+
     return (
         <div className="flex min-h-full w-full flex-col items-center justify-center bg-transparent p-4">
             <Card className="w-full max-w-[440px] p-8 shadow-lg border-none bg-card rounded-[12px]">
@@ -13,41 +63,54 @@ const Login = () => {
                     <CardTitle className="text-2xl font-bold text-center text-foreground mb-2">모이모 로그인</CardTitle>
                     <CardDescription className="text-center">이메일과 비밀번호를 입력하여 로그인하세요</CardDescription>
                 </CardHeader>
+                {/* 테스트 계정 - 추후 제거 */}
+                <div className="flex flex-col items-center border border-muted-foreground bg-background rounded-[12px] p-2 gap-1 mb-6">
+                    <p className="text-[11px] font-medium text-muted-foreground italic">테스트 계정</p>
+                    <p className="text-[11px] text-muted-foreground italic">moimo@email.com / password123</p>
+                </div>
                 <CardContent className="flex flex-col gap-8 p-0">
-                    <div className="flex flex-col gap-6">
-                        <div className="grid gap-2">
-                            <Label
-                                htmlFor="email"
-                                className="text-sm font-medium text-muted-foreground mr-auto"
-                            >
-                                이메일
-                            </Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="moimo@email.com"
-                                className="h-12 border-input focus-visible:ring-primary"
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label
-                                htmlFor="password"
-                                className="text-sm font-medium text-muted-foreground mr-auto"
-                            >
-                                비밀번호
-                            </Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="비밀번호를 입력하세요"
-                                className="h-12 border-input focus-visible:ring-primary"
-                            />
-                        </div>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="flex flex-col gap-6">
+                            <div className="grid gap-2">
+                                <Label
+                                    htmlFor="email"
+                                    className="text-sm font-medium text-muted-foreground mr-auto"
+                                >
+                                    이메일
+                                </Label>
+                                <Input
+                                    {...register("email")}
+                                    type="email"
+                                    placeholder="moimo@email.com"
+                                    className="h-12 border-input focus-visible:ring-primary"
+                                />
+                                {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+                            </div>
+                            <div className="grid gap-2">
+                                <Label
+                                    htmlFor="password"
+                                    className="text-sm font-medium text-muted-foreground mr-auto"
+                                >
+                                    비밀번호
+                                </Label>
+                                <Input
+                                    {...register("password")}
+                                    type="password"
+                                    placeholder="비밀번호를 입력하세요"
+                                    className="h-12 border-input focus-visible:ring-primary"
+                                />
+                                {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+                            </div>
 
-                        <Button className="w-full h-12 mt-2 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-sm border-none">
-                            로그인
-                        </Button>
-                    </div>
+                            <Button
+                                className="w-full h-12 mt-2 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-sm border-none"
+                                disabled={isPending}
+                            >
+                                {isPending ? "로딩 중..." : "로그인"}
+                            </Button>
+                        </div>
+                    </form>
+
 
                     <div className="flex justify-center items-center gap-4 text-xs text-muted-foreground">
                         <Link to="/join" className="hover:underline">회원가입</Link>
