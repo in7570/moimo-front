@@ -1,4 +1,3 @@
-import React from "react";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
@@ -11,14 +10,14 @@ interface MeetingCardProps {
   className?: string;
 }
 
-const MeetingCard: React.FC<MeetingCardProps> = ({
+function MeetingCard({
   title,
   imageUrl,
   location,
   participantsCount,
   onClick,
   className,
-}) => {
+}: MeetingCardProps) {
   return (
     <Card
       className={cn(
@@ -64,6 +63,6 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
       </CardFooter>
     </Card>
   );
-};
+}
 
 export default MeetingCard;

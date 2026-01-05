@@ -1,16 +1,10 @@
-import React from "react";
-
 interface TopicCardProps {
   topicName: string;
   imageUrl?: string;
   onClick?: () => void;
 }
 
-const TopicCard: React.FC<TopicCardProps> = ({
-  topicName,
-  imageUrl,
-  onClick,
-}) => {
+function TopicCard({ topicName, imageUrl, onClick }: TopicCardProps) {
   return (
     <div
       className="flex flex-col items-center justify-center p-8 rounded-lg transition-colors"
@@ -37,6 +31,6 @@ const TopicCard: React.FC<TopicCardProps> = ({
       <p className="text-base font-medium text-center">{topicName}</p>
     </div>
   );
-};
+}
 
 export default TopicCard;
