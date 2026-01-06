@@ -32,11 +32,14 @@ export const useLoginMutation = () => {
 }
 
 // 회원가입 Muatation
-export const useSignupMutation = () => {
+export const useJoinMutation = () => {
     return useMutation({
         mutationFn: async (data: any) => {
             const response = await join(data);
             return response;
+        },
+        onError: (error: AxiosError<{ message: string }>) => {
+            console.error(error);
         }
     })
 }

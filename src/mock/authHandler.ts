@@ -1,7 +1,7 @@
 import { INTEREST_CATEGORIES } from '@/constants/interests';
 import { http, HttpResponse, delay } from 'msw';
 
-const httpUrl = import.meta.env.VITE_API_URL;
+const httpUrl = import.meta.env.VITE_API_URL || 'https://moimo-back.vercel.app';
 
 // 일반 로그인 핸들러
 export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => {
@@ -57,7 +57,10 @@ export const checkEmail = http.post(`${httpUrl}/users/check-email`, async ({ req
             { status: 409 }
         );
     }
-    return HttpResponse.json({ available: true });
+
+    return HttpResponse.json({ message: "사용 가능한 이메일입니다." },
+        { status: 200 }
+    );
 });
 
 // 닉네임 중복 확인
@@ -71,7 +74,9 @@ export const checkNickname = http.post(`${httpUrl}/users/check-nickname`, async 
             { status: 409 }
         );
     }
-    return HttpResponse.json({ available: true });
+    return HttpResponse.json({ message: "사용 가능한 닉네임입니다." },
+        { status: 200 }
+    );
 });
 
 // 추가정보 핸들러

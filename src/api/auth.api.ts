@@ -20,12 +20,12 @@ export const join = async (data: any): Promise<{ message: string }> => {
     return response.data;
 };
 
-export const checkEmail = async (data: { email: string }): Promise<{ available: boolean }> => {
+export const checkEmail = async (data: { email: string }) => {
     const response = await apiClient.post("/users/check-email", data);
     return response.data;
 };
 
-export const checkNickname = async (data: { nickname: string }): Promise<{ available: boolean }> => {
+export const checkNickname = async (data: { nickname: string }) => {
     const response = await apiClient.post("/users/check-nickname", data);
     return response.data;
 };
