@@ -11,6 +11,7 @@ export const routeList = [
     {
         path: "/",
         element: <MainLayout />,
+        // errorElement: <Error />,
         children: [
             {
                 path: "/",
