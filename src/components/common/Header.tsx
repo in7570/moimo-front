@@ -1,7 +1,7 @@
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
-import { NotificationDropdown } from "./NotificationDropdown";
-import { ProfileDropdown } from "./ProfileDropdown";
+import { NotificationDropdown } from "@/components/common/NotificationDropdown";
+import { ProfileDropdown } from "@/components/common/ProfileDropdown";
 import { Link } from "react-router-dom";
 
 function Header() {
