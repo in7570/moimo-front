@@ -1,5 +1,6 @@
 import type { LoginFormValues } from "@/pages/user/Login";
 import { apiClient } from "./client";
+import type { JoinFormValues } from "@/pages/user/Join";
 
 export interface UserResponse {
     user: {
@@ -15,7 +16,7 @@ export const login = async (data: LoginFormValues): Promise<UserResponse> => {
     return response.data;
 };
 
-export const join = async (data: any): Promise<{ message: string }> => {
+export const join = async (data: JoinFormValues): Promise<{ message: string }> => {
     const response = await apiClient.post("/users/register", data);
     return response.data;
 };
@@ -31,12 +32,12 @@ export const checkNickname = async (data: { nickname: string }) => {
 };
 
 export const findPassword = async (data: { email: string }): Promise<{ message: string }> => {
-    const response = await apiClient.post("/users/passwordFind", data);
+    const response = await apiClient.post("/users/find-password", data);
     return response.data;
 };
 
 export const resetPassword = async (data: any): Promise<{ message: string }> => {
-    const response = await apiClient.post("/users/passwordReset", data);
+    const response = await apiClient.post("/users/reset-password", data);
     return response.data;
 };
 

@@ -97,7 +97,7 @@ export const getInterests = http.get(`${httpUrl}/interests`, async () => {
 });
 
 // 비밀번호 찾기
-export const findPassword = http.post(`${httpUrl}/users/passwordFind`, async ({ request }) => {
+export const findPassword = http.post(`${httpUrl}/users/find-password`, async ({ request }) => {
     const { email } = (await request.json()) as any;
     await delay(1000);
 
@@ -110,7 +110,7 @@ export const findPassword = http.post(`${httpUrl}/users/passwordFind`, async ({ 
 });
 
 // 비밀번호 재설정
-export const resetPassword = http.post(`${httpUrl}/users/passwordReset`, async ({ request }) => {
+export const resetPassword = http.post(`${httpUrl}/users/reset-password`, async ({ request }) => {
     // const { email, code, newPassword } = (await request.json()) as any;
     await delay(1000);
     return HttpResponse.json({ message: "비밀번호가 성공적으로 변경되었습니다." });
