@@ -44,7 +44,6 @@ const Join = () => {
     const nicknameCheckMutation = useNicknameCheckMutation();
     const navigate = useNavigate();
 
-    // react-hook-form 사용
     const {
         register,
         handleSubmit,

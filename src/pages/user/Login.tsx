@@ -28,7 +28,6 @@ const Login = () => {
     const { mutateAsync: loginMutation, isPending } = useLoginMutation();
     const navigate = useNavigate();
 
-    // react-hook-form 사용
     const {
         register,
         handleSubmit,
