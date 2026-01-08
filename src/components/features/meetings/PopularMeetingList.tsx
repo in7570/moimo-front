@@ -1,5 +1,5 @@
 import { MEETING_CATEGORIES } from "@/constants/meetings";
-import MeetingCard from "../common/MeetingCard";
+import MeetingCard from "./MeetingCard";
 
 function PopularMeetingList() {
   return (

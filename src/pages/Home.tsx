@@ -1,8 +1,8 @@
-import JoinedMeetingsList from "@/components/common/JoinedMeetingsList";
-import PendingMeetingsList from "@/components/common/PendingMeetingsList";
-import PopularMeetingList from "@/components/common/PopularMeetingList";
-import SearchSection from "@/components/common/SearchSection";
-import TopicSection from "@/components/common/TopicSection";
+import JoinedMeetingsList from "@/components/features/meetings/JoinedMeetingsList";
+import PendingMeetingsList from "@/components/features/meetings/PendingMeetingsList";
+import PopularMeetingList from "@/components/features/meetings/PopularMeetingList";
+import SearchSection from "@/components/features/search/SearchSection";
+import TopicSection from "@/components/features/topics/TopicSection";
 import { useAuthStore } from "@/store/authStore";
 
 function Home() {
