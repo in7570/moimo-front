@@ -30,22 +30,30 @@ export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => 
 
 // 구글 로그인
 export const googleLogin = http.post(`${httpUrl}/users/login/google`, async ({ request }) => {
-    const { token, redirectUri } = (await request.json()) as any;
-    console.log('google login request:', { token, redirectUri });
-    await delay(1000);
-    return HttpResponse.json({
-        user: {
-            email: "google-user@email.com",
-            nickname: "구글사용자",
-        },
-        isNewUser: true,
-    }, {
-        status: 200,
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict'
-        }
-    });
+    try {
+        const { token, redirectUri } = (await request.json()) as any;
+        console.log('google login request:', { token, redirectUri });
+        await delay(1000);
+        return HttpResponse.json({
+            user: {
+                email: "google-user@email.com",
+                nickname: "구글사용자",
+            },
+            isNewUser: true,
+        }, {
+            status: 200,
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict'
+            }
+        });
+    } catch (error) {
+        console.error('MSW googleLogin error:', error);
+        return new HttpResponse(
+            JSON.stringify({ error: { code: "500", message: error instanceof Error ? error.message : "Unknown error" } }),
+            { status: 500 }
+        );
+    }
 });
 
 // 로그아웃 핸들러

@@ -31,7 +31,6 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
     const { mutateAsync: loginMutation, isPending } = useLoginMutation();
     const googleLoginMutation = useGoogleLoginMutation();
-    const { mutateAsync: logoutMutation } = useLogoutMutation();
     const navigate = useNavigate();
 
     const {
