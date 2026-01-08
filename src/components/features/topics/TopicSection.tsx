@@ -1,5 +1,5 @@
 import { TOPIC_CATEGORIES } from "@/constants/topics";
-import TopicCard from "@/components/features/topics/TopicCard";
+import TopicCard from "@features/topics/TopicCard";
 
 function TopicSection() {
   return (

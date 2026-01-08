@@ -1,5 +1,5 @@
 import { MEETING_CATEGORIES } from "@/constants/meetings";
-import MeetingCard from "../features/meetings/MeetingCard";
+import MeetingCard from "@features/meetings/MeetingCard";
 import { useAuthStore } from "@/store/authStore";
 
 function JoinedMeetingsList() {
