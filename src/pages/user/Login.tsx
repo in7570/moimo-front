@@ -62,13 +62,14 @@ const Login = () => {
 
     // 구글 로그인
     // 1. Authorization Code Flow 방식 (새로운 방식)
-    const handleGoogleCodeSuccess = async (codeResponse: any) => {
+    const handleGoogleCodeSuccess = async (codeResponse: { code: string }) => {
         try {
             // codeResponse.code가 Authorization Code
             const res = await googleLoginMutation.mutateAsync({
-                token: codeResponse.code,
+                code: codeResponse.code,
                 redirectUri: 'postmessage' // Auth Code 방식에서는 'postmessage' 고정
             });
+            console.log(res);
 
             if (res.isNewUser) {
                 navigate("/extra-info", {
