@@ -27,7 +27,7 @@ export const login = async (data: LoginFormValues): Promise<LoginResponse> => {
     }
 };
 
-export const googleLogin = async (data: { token: string; redirectUri: string }): Promise<LoginResponse> => {
+export const googleLogin = async (data: { code: string; redirectUri: string }): Promise<LoginResponse> => {
     try {
         const response = await apiClient.post("/users/login/google", data);
         const accessToken = response.headers.authorization?.replace("Bearer ", "");
