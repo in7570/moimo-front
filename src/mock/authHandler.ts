@@ -1,7 +1,6 @@
-import { INTEREST_CATEGORIES } from '@/constants/interests';
 import { http, HttpResponse, delay } from 'msw';
+import { httpUrl } from './mockData';
 
-const httpUrl = import.meta.env.VITE_API_URL || 'https://moimo-back.vercel.app';
 
 // 일반 로그인 핸들러
 export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => {
@@ -63,9 +62,30 @@ export const logout = http.post(`${httpUrl}/users/logout`, async () => {
 });
 
 // 회원가입 핸들러
-export const join = http.post(`${httpUrl}/users/register`, async () => {
+export const join = http.post(`${httpUrl}/users/register`, async ({ request }) => {
+    const { email, password, nickname } = (await request.json()) as any;
     await delay(1000);
-    return HttpResponse.json({ message: "회원가입이 완료되었습니다." });
+    return HttpResponse.json({
+        "message": "회원가입 성공",
+        "user": {
+            "id": 3,
+            "email": email,
+            "password": password,
+            "nickname": nickname,
+            "bio": null,
+            "resetCode": null,
+            "refreshToken": null,
+            "createdAt": "2026-01-07T08:11:07.000Z",
+            "updatedAt": "2026-01-07T08:11:07.000Z"
+        }
+    },
+        {
+            headers: {
+                'Authorization': 'Bearer mock-jwt-token',
+                'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict'
+            }
+        }
+    );
 });
 
 // 이메일 중복 확인
@@ -97,23 +117,6 @@ export const checkNickname = http.post(`${httpUrl}/users/check-nickname`, async 
         );
     }
     return HttpResponse.json({ message: "사용 가능한 닉네임입니다." },
-        { status: 200 }
-    );
-});
-
-// 추가정보 핸들러
-export const extraInfo = http.patch(`${httpUrl}/users/extraInfo`, async ({ request }) => {
-    // const { bio, interests } = (await request.json()) as any;
-    await delay(1000);
-    return HttpResponse.json({ message: "추가정보가 완료되었습니다." },
-        { status: 200 }
-    );
-});
-
-// 관심사 조회 핸들러
-export const getInterests = http.get(`${httpUrl}/interests`, async () => {
-    await delay(1000);
-    return HttpResponse.json({ interests: INTEREST_CATEGORIES },
         { status: 200 }
     );
 });

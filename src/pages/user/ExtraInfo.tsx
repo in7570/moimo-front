@@ -1,40 +1,92 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-label";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { INTEREST_CATEGORIES } from "@/constants/interests";
+import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useInterestQuery } from "@/hooks/useInterestQuery";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useExtraInfoMutation } from "@/hooks/useUserInfoMutations";
+
+// zod schema 정의
+const extraInfoSchema = z.object({
+    bio: z.string().max(100, "자기소개는 100자 이내로 입력해주세요."),
+    interests: z.array(z.string()).min(3, "관심사를 3개 이상 선택해주세요."),
+});
+
+export type ExtraInfoFormValues = z.infer<typeof extraInfoSchema>;
 
 const ExtraInfo = () => {
-    const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { /*id, email, */ nickname } = location.state || {}; // id, email은 이제 토큰에서 처리, nickname은 환영 메시지용
+    const { data: interests } = useInterestQuery();
+    const extraInfoMutation = useExtraInfoMutation();
 
-    const toggleInterest = (interest: string) => {
-        setSelectedInterests(prev => {
-            if (prev.includes(interest)) {
-                return prev.filter(i => i !== interest);
-            }
-            if (prev.length >= 3) {
-                return prev;
-            }
-            return [...prev, interest];
-        });
+    const {
+        register,
+        handleSubmit,
+        setError,
+        setValue,
+        watch,
+        formState: { errors, isValid }
+    } = useForm<ExtraInfoFormValues>({
+        resolver: zodResolver(extraInfoSchema),
+        mode: "onChange",
+        defaultValues: {
+            bio: "",
+            interests: [],
+        }
+    });
+
+    const selectedInterests = watch("interests");
+
+    const toggleInterest = (interestName: string) => {
+        const currentInterests = [...selectedInterests];
+        const index = currentInterests.indexOf(interestName);
+
+        if (index > -1) {
+            currentInterests.splice(index, 1);
+        } else {
+            currentInterests.push(interestName);
+        }
+
+        setValue("interests", currentInterests, { shouldValidate: true });
     };
 
-    const isSelected = (interest: string) => selectedInterests.includes(interest);
+    const onSubmit = async (data: ExtraInfoFormValues) => {
+        try {
+            await extraInfoMutation.mutateAsync({
+                ...data,
+                // id,
+                // email,
+                nickname
+            });
+            alert("프로필 등록이 완료되었습니다.");
+            navigate("/");
+        } catch (error) {
+            setError("root",
+                {
+                    type: "manual",
+                    message: "프로필 등록에 실패했습니다"
+                }
+            );
+        }
+    };
 
     return (
         <div className="flex min-h-full w-full flex-col items-center justify-center bg-transparent p-4">
             <Card className="w-full max-w-[500px] p-8 shadow-lg border-none bg-card rounded-[12px]">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center text-foreground mb-2">프로필 등록하기</CardTitle>
-                    <CardDescription className="text-center">프로필을 등록하여 모이모와 함께해요</CardDescription>
+                    <CardDescription className="text-center">
+                        {nickname ? `${nickname}님, ` : ""}프로필을 등록하여 모이모와 함께해요
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-8 p-0">
-                    <div className="flex flex-col gap-6">
+                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
                         {/* 자기소개 입력 섹션 */}
                         <div className="grid gap-2">
                             <Label
@@ -45,57 +97,62 @@ const ExtraInfo = () => {
                             </Label>
                             <Textarea
                                 id="bio"
+                                {...register("bio")}
                                 placeholder="자기소개를 입력해주세요"
-                                className="h-12 border-input focus-visible:ring-primary"
+                                className="h-12 border-input focus-visible:ring-primary min-h-[100px] py-3"
                             />
+                            {errors.bio && <p className="text-sm text-destructive">{errors.bio.message}</p>}
                         </div>
+
                         {/* 관심사 선택 섹션 */}
                         <div className="grid gap-2">
                             <Label
-                                htmlFor="interests"
                                 className="text-sm font-medium text-muted-foreground mr-auto"
                             >
-                                관심사 (최대 3개까지 선택해주세요)
+                                관심사 (3개 이상 선택해주세요)
                             </Label>
                             <div className="grid grid-cols-4 gap-3">
-                                {INTEREST_CATEGORIES.map((category) => (
+                                {interests?.map((interest) => (
                                     <button
-                                        key={category}
-                                        onClick={() => toggleInterest(category)}
+                                        key={interest.id}
+                                        type="button"
+                                        onClick={() => toggleInterest(interest.name)}
                                         className={cn(
                                             "h-12 rounded-[8px] text-sm font-medium transition-all duration-200 border-none shadow-sm",
-                                            isSelected(category)
+                                            selectedInterests.includes(interest.name)
                                                 ? "bg-primary text-white shadow-md transform scale-[0.98]"
                                                 : "bg-secondary/40 text-foreground hover:bg-secondary/60"
                                         )}
                                     >
-                                        {category}
+                                        {interest.name}
                                     </button>
                                 ))}
                             </div>
+                            {errors.interests && <p className="text-sm text-destructive">{errors.interests.message}</p>}
                         </div>
 
                         {/* 등록 버튼 */}
                         <div className="flex flex-col gap-4 mt-2">
                             <Button
-                                disabled={selectedInterests.length === 0}
+                                type="submit"
+                                disabled={!isValid}
                                 className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-md border-none disabled:bg-muted disabled:text-muted-foreground"
                             >
                                 프로필 등록하기
                             </Button>
                             <button
                                 type="button"
-                                onClick={() => navigate("/login")}
+                                onClick={() => navigate("/")}
                                 className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
                             >
                                 다음에 할래요
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </CardContent>
             </Card>
         </div>
-    )
-}
+    );
+};
 
 export default ExtraInfo;
