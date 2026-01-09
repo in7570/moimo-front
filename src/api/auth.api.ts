@@ -2,24 +2,53 @@ import type { LoginFormValues } from "@/pages/user/Login";
 import { apiClient } from "@/api/client";
 import type { JoinFormValues } from "@/pages/user/Join";
 
-export interface UserResponse {
+export interface LoginResponse {
     user: {
-        id: string;
         email: string;
-        username: string;
+        nickname: string;
     };
-    token: string;
+    accessToken: string;
+    isNewUser: boolean;
 }
 
-export const login = async (data: LoginFormValues): Promise<UserResponse> => {
+export const login = async (data: LoginFormValues): Promise<LoginResponse> => {
     try {
         const response = await apiClient.post("/users/login", data);
-        return response.data;
+        const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        return {
+            ...response.data,
+            accessToken,
+        };
     } catch (error) {
         console.error("login error:", error);
         throw error;
     }
 };
+
+export const googleLogin = async (data: { code: string; redirectUri: string }): Promise<LoginResponse> => {
+    try {
+        const response = await apiClient.post("/users/login/google", data);
+        const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        return {
+            ...response.data,
+            accessToken,
+        };
+    } catch (error) {
+        console.error("googleLogin error:", error);
+        throw error;
+    }
+};
+
+// 로그아웃
+export const logout = async () => {
+    try {
+        const response = await apiClient.post(`/users/logout`);
+        return response.data;
+    } catch (error) {
+        console.error("logout error:", error);
+        throw error;
+    }
+}
 
 export const join = async (data: JoinFormValues): Promise<{ message: string }> => {
     try {
@@ -71,12 +100,14 @@ export const resetPassword = async (data: any): Promise<{ message: string }> => 
     }
 };
 
-export const googleLogin = async (token: string): Promise<UserResponse> => {
+// 토큰 갱신
+export const refresh = async (): Promise<string | undefined> => {
     try {
-        const response = await apiClient.post("/users/login/google", { token });
-        return response.data;
+        const response = await apiClient.post("/users/refresh");
+        const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        return accessToken;
     } catch (error) {
-        console.error("googleLogin error:", error);
+        console.error("refresh error:", error);
         throw error;
     }
-};
+}

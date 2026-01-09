@@ -76,7 +76,7 @@ const Join = () => {
         try {
             await joinMutation(data);
             alert("회원가입이 완료되었습니다.");
-            navigate("/login");
+            navigate("/extra-info");
         } catch (error: any) {
             console.error("회원가입 중 오류 발생: ", error);
             setError("root", {
