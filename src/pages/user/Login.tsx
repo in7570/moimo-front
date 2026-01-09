@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import * as z from "zod";
 // import { GoogleLogin } from "@react-oauth/google";
-import { useGoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin, type CodeResponse } from "@react-oauth/google";
 
 // zod schema 정의
 export const loginSchema = z.object({
@@ -62,13 +62,14 @@ const Login = () => {
 
     // 구글 로그인
     // 1. Authorization Code Flow 방식 (새로운 방식)
-    const handleGoogleCodeSuccess = async (codeResponse: any) => {
+    const handleGoogleCodeSuccess = async (codeResponse: CodeResponse) => {
         try {
             // codeResponse.code가 Authorization Code
             const res = await googleLoginMutation.mutateAsync({
-                token: codeResponse.code,
+                code: codeResponse.code,
                 redirectUri: 'postmessage' // Auth Code 방식에서는 'postmessage' 고정
             });
+            console.log(res);
 
             if (res.isNewUser) {
                 navigate("/extra-info", {

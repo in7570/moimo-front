@@ -27,7 +27,6 @@ export const login = async (data: LoginFormValues): Promise<LoginResponse> => {
     }
 };
 
-// 구글 로그인
 export const googleLogin = async (data: { token: string; redirectUri: string }): Promise<LoginResponse> => {
     try {
         const response = await apiClient.post("/users/login/google", data);

@@ -36,7 +36,7 @@ export const useLoginMutation = () => {
 export const useGoogleLoginMutation = () => {
     const { storeLogin } = useAuthStore();
     return useMutation({
-        mutationFn: async (data: { token: string; redirectUri: string }) => {
+        mutationFn: async (data: { code: string; redirectUri: string }) => {
             return await googleLogin(data);
         },
         onSuccess: (data) => {
