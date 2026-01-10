@@ -1,13 +1,20 @@
 export interface Meeting {
-    id: number;
-    title: string;
-    description: string;
-    maxParticipants: number;
-    meetingDate: Date;
-    address: string;
-    latitude: number;
-    longitude: number;
-    hostId: number;
-    createdAt: Date;
-    updatedAt?: Date;
+  meetingId: number;
+  title: string;
+  interestName: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  address: string;
+  meetingDate: string;
+}
+
+export interface MeetingMeta {
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export interface MeetingListResponse {
+  data: Meeting[];
+  meta: MeetingMeta;
 }
