@@ -103,14 +103,12 @@ export const interestCategories: Interest[] = [
   },
 ];
 
-export const mockMeetings: Meeting[] = Array.from({ length: 25 }).map(
-  (_, i) => ({
-    meetingId: i + 1,
-    title: `모임 제목 ${i + 1}`,
-    interestName: i % 2 === 0 ? "자기계발/공부" : "스포츠/운동",
-    maxParticipants: 10,
-    currentParticipants: i % 10,
-    address: `서울시 강남구 역삼동 ${i + 1}번지`,
-    meetingDate: `2024-03-${(i % 28) + 1}T1${i % 9}:00:00`,
-  })
-);
+export const mockMeetings: Meeting[] = Array.from({ length: 25 }, (_, i) => ({
+  meetingId: i + 1,
+  title: `모임 제목 ${i + 1}`,
+  interestName: i % 2 === 0 ? "자기계발/공부" : "스포츠/운동",
+  maxParticipants: 10,
+  currentParticipants: i % 10,
+  address: `서울시 강남구 역삼동 ${i + 1}번지`,
+  meetingDate: `2024-03-${(i % 28) + 1}T1${i % 9}:00:00`,
+}));
