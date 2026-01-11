@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import InfoSection from "@features/moimer/InfoSection";
 import GuidelineCard from "@features/moimer/GuidelineCard";
 import FAQCard from "@features/moimer/FAQCard";
 import FixedBottomButton from "@components/common/FixedBottomButton";
+import MoimerApplicationModal from "@features/meetings/CreateMeetingModal";
 import { useState } from 'react';
 import { guidelines, faqs } from "@/constants/moimerIntroData"
 
@@ -16,8 +16,8 @@ function Illustration() {
 }
 
 function MoimerIntro() {
-  const navigate = useNavigate();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="flex flex-col min-h-screen bg-card pb-32">
@@ -57,7 +57,12 @@ function MoimerIntro() {
     ))}
   </div>
 </section>
-      <FixedBottomButton onClick={() => navigate("/")}>모이모 시작하기</FixedBottomButton>
+      <FixedBottomButton onClick={() => setIsModalOpen(true)}>모이모 시작하기</FixedBottomButton>
+      
+      <MoimerApplicationModal 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   );
 }
