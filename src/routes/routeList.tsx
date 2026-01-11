@@ -5,6 +5,11 @@ import Join from "@/pages/user/Join";
 import FindPassword from "@/pages/user/FindPassword";
 import ResetPassword from "@/pages/user/ResetPassword";
 import ExtraInfo from "@/pages/user/ExtraInfo";
+import MypageSession from "@/pages/mypage/MypageSession";
+import Profile from "@/pages/mypage/Profile";
+import JoinedMeeting from "@/pages/mypage/JoinedMeeting";
+import HostMeeting from "@/pages/mypage/HostMeeting";
+import { Navigate } from "react-router-dom";
 
 export const routeList = [
     {
@@ -35,6 +40,28 @@ export const routeList = [
             {
                 path: "/extra-info",
                 element: <ExtraInfo />,
+            },
+            {
+                path: "/mypage",
+                element: <MypageSession />,
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to="profile" replace />,
+                    },
+                    {
+                        path: "profile",
+                        element: <Profile />,
+                    },
+                    {
+                        path: "meetings/join",
+                        element: <JoinedMeeting />,
+                    },
+                    {
+                        path: "meetings/hosting",
+                        element: <HostMeeting />,
+                    },
+                ]
             }
         ],
     },
