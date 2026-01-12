@@ -1,4 +1,4 @@
-import MeetingCard from "@/components/common/MeetingCard";
+import MeetingCard from "@features/meetings/MeetingCard";
 import type { Meeting } from "@/models/meeting.model";
 
 interface MeetingListProps {

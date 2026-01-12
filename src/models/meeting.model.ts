@@ -10,8 +10,9 @@ export interface Meeting {
 
 export interface MeetingMeta {
   totalCount: number;
+  page: number;
+  limit: number;
   totalPages: number;
-  currentPage: number;
 }
 
 export interface MeetingListResponse {

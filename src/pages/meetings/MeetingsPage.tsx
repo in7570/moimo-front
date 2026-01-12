@@ -1,18 +1,31 @@
 import { useState } from "react";
 import MeetingList from "@/components/common/MeetingList";
 import PaginationComponent from "@/components/common/PaginationComponent";
-import { useMeetingsQuery } from "@/hooks/useMeetingsQuery.ts";
+import { useMeetingsQuery } from "@/hooks/useMeetingsQuery";
 import { usePagination } from "@/hooks/usePagination";
+import { useMeetingFilter } from "@/hooks/useMeetingFilter";
+import { MeetingFilterControls } from "@/components/features/meetings/MeetingFilterControls";
 
 const MeetingsPage = () => {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+
+  const {
+    filters,
+    handleSortChange,
+    handleInterestFilterChange,
+    handleFinishedFilterChange,
+  } = useMeetingFilter();
 
   const {
     data: meetingsResponse,
     isLoading,
     isError,
-  } = useMeetingsQuery({ page, limit });
+  } = useMeetingsQuery({ page, limit, ...filters });
+
+  // TODO: useInterestQuery 사용하기
+  const interestsData = [];
+  const isInterestsLoading = false;
 
   const { totalPages, goToNextPage, goToPreviousPage } = usePagination({
     page,
@@ -28,17 +41,14 @@ const MeetingsPage = () => {
     <div className="space-y-4 bg-card">
       <h1 className="text-3xl font-bold p-4">원하는 모임 찾기</h1>
 
-      {/* TODO: Filter section */}
-      <div className="flex justify-between items-center px-4">
-        <div>
-          <p>카테고리 | 날짜 | 지역 | 개수</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <p className="cursor-pointer">인기순</p>
-          <p className="text-muted-foreground">|</p>
-          <p className="cursor-pointer">최신순</p>
-        </div>
-      </div>
+      <MeetingFilterControls
+        filters={filters}
+        interestsData={interestsData}
+        isInterestsLoading={isInterestsLoading}
+        handleSortChange={handleSortChange}
+        handleInterestFilterChange={handleInterestFilterChange}
+        handleFinishedFilterChange={handleFinishedFilterChange}
+      />
 
       {isLoading && <p className="text-center">로딩 중...</p>}
       {isError && (

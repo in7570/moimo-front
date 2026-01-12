@@ -1,6 +1,10 @@
 import { apiClient } from "@/api/client";
 import type { MeetingListResponse } from "@/models/meeting.model";
 
+export type SortType = "NEW" | "UPDATE" | "DEADLINE" | "POPULAR";
+export type InterestFilterType = string;
+export type FinishedFilterType = boolean;
+
 export interface GetMeetingsParams {
   page?: number;
   limit?: number;
