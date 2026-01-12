@@ -82,7 +82,7 @@ const ExtraInfo = () => {
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center text-foreground mb-2">프로필 등록하기</CardTitle>
                     <CardDescription className="text-center">
-                        {nickname ? `${nickname}님, ` : ""}프로필을 등록하여 모이모와 함께해요
+                        {nickname ? `${nickname}님, ` : ""}프로필을 등록하여 모이모와 친해져요
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-8 p-0">

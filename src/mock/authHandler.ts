@@ -13,10 +13,26 @@ export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => 
                 email,
                 nickname: "테스터",
             },
+            isNewUser: false, // 기존 유저는 메인으로 이동
         }, {
             headers: {
                 'Authorization': 'Bearer mock-jwt-token',
                 'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict'
+            }
+        });
+    }
+
+    if (email === "newuser@email.com" && password === "12345678") {
+        return HttpResponse.json({
+            user: {
+                email,
+                nickname: "신규유저",
+            },
+            isNewUser: true, // 신규 유저는 추가 정보 입력 페이지로 이동
+        }, {
+            headers: {
+                'Authorization': 'Bearer mock-jwt-token-new',
+                'Set-Cookie': 'refreshToken=mock-refresh-token-new; HttpOnly; Secure; SameSite=Strict'
             }
         });
     }
