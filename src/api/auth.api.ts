@@ -5,11 +5,11 @@ import type { User } from "@/models/user.model";
 
 export interface LoginResponse {
     user: {
+        isNewUser: boolean;
         email: string;
         nickname: string;
     };
     accessToken: string;
-    isNewUser: boolean;
 }
 
 // 일반 로그인

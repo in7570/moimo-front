@@ -10,10 +10,10 @@ export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => 
     if (email === "moimo@email.com" && password === "12345678") {
         return HttpResponse.json({
             user: {
+                isNewUser: false, // 기존 유저는 메인으로 이동
                 email,
                 nickname: "테스터",
             },
-            isNewUser: false, // 기존 유저는 메인으로 이동
         }, {
             headers: {
                 'Authorization': 'Bearer mock-jwt-token',
@@ -25,10 +25,10 @@ export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => 
     if (email === "newuser@email.com" && password === "12345678") {
         return HttpResponse.json({
             user: {
+                isNewUser: true, // 신규 유저는 추가 정보 입력 페이지로 이동
                 email,
                 nickname: "신규유저",
             },
-            isNewUser: true, // 신규 유저는 추가 정보 입력 페이지로 이동
         }, {
             headers: {
                 'Authorization': 'Bearer mock-jwt-token-new',
@@ -51,10 +51,10 @@ export const googleLogin = http.post(`${httpUrl}/users/login/google`, async ({ r
         await delay(1000);
         return HttpResponse.json({
             user: {
+                isNewUser: true,
                 email: "google-user@email.com",
                 nickname: "구글사용자",
             },
-            isNewUser: true,
         }, {
             status: 200,
             headers: {

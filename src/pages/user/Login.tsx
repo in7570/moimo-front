@@ -50,7 +50,7 @@ const Login = () => {
         try {
             const loginInfo = await loginMutation(data);
 
-            if (loginInfo.isNewUser) {
+            if (loginInfo.user.isNewUser) {
                 navigate("/extra-info", {
                     state: {
                         accessToken: loginInfo.accessToken,
@@ -81,7 +81,7 @@ const Login = () => {
             });
             console.log(loginInfo);
 
-            if (loginInfo.isNewUser) {
+            if (loginInfo.user.isNewUser) {
                 navigate("/extra-info", {
                     state: {
                         accessToken: loginInfo.accessToken,
