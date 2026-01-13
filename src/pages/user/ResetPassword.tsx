@@ -154,7 +154,17 @@ const ResetPassword = () => {
                                         {verifyResetCode.isPending ? "확인 중..." : "인증확인"}
                                     </Button>
                                 </div>
-                                {errors.resetCode && <p className="text-sm text-destructive">{errors.resetCode.message}</p>}
+                                {errors.resetCode ? (
+                                    <p className="text-sm text-destructive">{errors.resetCode.message}</p>
+                                ) : verifyResetCode.isError ? (
+                                    <p className="text-sm text-destructive">
+                                        {"기한이 만료되었거나 유효하지 않은 인증코드입니다."}
+                                    </p>
+                                ) : verifyResetCode.isSuccess ? (
+                                    <p className="text-sm text-success">
+                                        {"인증코드 확인이 완료되었습니다."}
+                                    </p>
+                                ) : null}
                             </div>
                             {/* 새로운 비밀번호 입력 섹션 */}
                             <div className="grid gap-2">
