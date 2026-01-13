@@ -4,12 +4,12 @@ import Login from "@/pages/user/Login";
 import Join from "@/pages/user/Join";
 import FindPassword from "@/pages/user/FindPassword";
 import ResetPassword from "@/pages/user/ResetPassword";
-import ExtraInfo from "@/pages/user/ExtraInfo";
 import MypageSession from "@/pages/mypage/MypageSession";
 import Profile from "@/pages/mypage/Profile";
 import JoinedMeeting from "@/pages/mypage/JoinedMeeting";
 import HostMeeting from "@/pages/mypage/HostMeeting";
 import { Navigate } from "react-router-dom";
+import UserInfo from "@/pages/user/UserInfo";
 
 export const routeList = [
     {
@@ -38,8 +38,8 @@ export const routeList = [
                 element: <ResetPassword />,
             },
             {
-                path: "/extra-info",
-                element: <ExtraInfo />,
+                path: "/user-info",
+                element: <UserInfo />,
             },
             {
                 path: "/mypage",
