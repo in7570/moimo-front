@@ -6,6 +6,7 @@ export const useMeetingsQuery = (params: GetMeetingsParams) => {
   const meetingsResponse = useQuery({
     queryKey: ["meetings", params],
     queryFn: () => getMeetings(params),
+    retry: 1,
   });
 
   return meetingsResponse;
