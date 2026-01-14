@@ -1,5 +1,6 @@
 import MainLayout from "@/components/common/MainLayout";
 import Home from "@/pages/Home";
+import MeetingsPage from "@/pages/meetings/MeetingsPage";
 import Login from "@/pages/user/Login";
 import Join from "@/pages/user/Join";
 import FindPassword from "@/pages/user/FindPassword";
@@ -9,10 +10,16 @@ import Profile from "@/pages/mypage/Profile";
 import JoinedMeeting from "@/pages/mypage/JoinedMeeting";
 import HostMeeting from "@/pages/mypage/HostMeeting";
 import { Navigate } from "react-router-dom";
+import MoimerIntro from "@/pages/moimer/MoimerIntro";
 import UserInfo from "@/pages/user/UserInfo";
 
 export const routeList = [
-    {
+  {
+    path: "/",
+    element: <MainLayout />,
+    // errorElement: <Error />,
+    children: [
+      {
         path: "/",
         element: <MainLayout />,
         // errorElement: <Error />,
