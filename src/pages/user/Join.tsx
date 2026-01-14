@@ -77,7 +77,7 @@ const Join = () => {
             const joinInfo = await joinMutation(data);
             const { /* id, email, */ nickname } = joinInfo.user;
             alert("회원가입이 완료되었습니다.");
-            navigate("/extra-info", { state: { /* id, email, */ nickname } });
+            navigate("/user-info", { state: { /* id, email, */ nickname } });
         } catch (error) {
             console.error("회원가입 중 오류 발생: ", error);
             setError("root", {
