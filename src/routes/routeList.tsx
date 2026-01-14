@@ -15,12 +15,7 @@ import UserInfo from "@/pages/user/UserInfo";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export const routeList = [
-  {
-    path: "/",
-    element: <MainLayout />,
-    // errorElement: <Error />,
-    children: [
-      {
+    {
         path: "/",
         element: <MainLayout />,
         // errorElement: <Error />,
@@ -28,6 +23,10 @@ export const routeList = [
             {
                 path: "/",
                 element: <Home />,
+            },
+            {
+                path: "/meetings",
+                element: <MeetingsPage />,
             },
             {
                 path: "/login",
@@ -46,8 +45,12 @@ export const routeList = [
                 element: <ResetPassword />,
             },
             {
-                path: "/user-info",
+                path: "/extra-info",
                 element: <UserInfo />,
+            },
+            {
+                path: "/moimer-intro",
+                element: <MoimerIntro />,
             },
             {
                 path: "/mypage",
