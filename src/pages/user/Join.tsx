@@ -215,21 +215,17 @@ const Join = () => {
                                         {nicknameCheckMutation.isPending ? "확인중..." : "중복확인"}
                                     </Button>
                                 </div>
-                                {errors.nickname && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.nickname.message}
-                                    </p>
-                                )}
-                                {nicknameCheckMutation.isSuccess && (
-                                    <p className="text-sm text-success">
-                                        {"사용 가능한 닉네임입니다."}
-                                    </p>
-                                )}
-                                {nicknameCheckMutation.isError && (
+                                {errors.nickname ? (
+                                    <p className="text-sm text-destructive">{errors.nickname.message}</p>
+                                ) : nicknameCheckMutation.isError ? (
                                     <p className="text-sm text-destructive">
                                         {"이미 사용 중인 닉네임입니다."}
                                     </p>
-                                )}
+                                ) : nicknameCheckMutation.isSuccess ? (
+                                    <p className="text-sm text-success">
+                                        {"사용 가능한 닉네임입니다."}
+                                    </p>
+                                ) : null}
                             </div>
                             {/* 비밀번호 입력 섹션 */}
                             <div className="grid gap-2">
