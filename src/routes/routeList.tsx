@@ -14,12 +14,7 @@ import MoimerIntro from "@/pages/moimer/MoimerIntro";
 import UserInfo from "@/pages/user/UserInfo";
 
 export const routeList = [
-  {
-    path: "/",
-    element: <MainLayout />,
-    // errorElement: <Error />,
-    children: [
-      {
+    {
         path: "/",
         element: <MainLayout />,
         // errorElement: <Error />,
@@ -27,6 +22,10 @@ export const routeList = [
             {
                 path: "/",
                 element: <Home />,
+            },
+            {
+                path: "/meetings",
+                element: <MeetingsPage />,
             },
             {
                 path: "/login",
@@ -45,8 +44,12 @@ export const routeList = [
                 element: <ResetPassword />,
             },
             {
-                path: "/user-info",
+                path: "/extra-info",
                 element: <UserInfo />,
+            },
+            {
+                path: "/moimer-intro",
+                element: <MoimerIntro />,
             },
             {
                 path: "/mypage",
