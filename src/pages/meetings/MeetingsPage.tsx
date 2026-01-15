@@ -7,6 +7,7 @@ import { usePagination } from "@/hooks/usePagination";
 import { useMeetingFilter } from "@/hooks/useMeetingFilter";
 import { MeetingFilterControls } from "@/components/features/meetings/MeetingFilterControls";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useInterestQuery } from "@/hooks/useInterestQuery";
 import type {
   FinishedFilterType,
   InterestFilterType,
@@ -51,9 +52,10 @@ const MeetingsPage = () => {
     isError,
   } = useMeetingsQuery({ page, limit, ...filters });
 
-  // TODO: useInterestQuery 사용하기
-  const interestsData = [];
-  const isInterestsLoading = false;
+  const {
+    data: interestsData,
+    isLoading: isInterestsLoading,
+  } = useInterestQuery();
 
   const { totalPages, isFirstPage, isLastPage } = usePagination({
     page,

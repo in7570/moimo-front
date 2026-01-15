@@ -1,16 +1,17 @@
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface TopicCardProps {
   topicName: string;
+  to: string;
   imageUrl?: string;
-  onClick?: () => void;
   size?: "sm" | "md";
 }
 
 function TopicCard({
   topicName,
+  to,
   imageUrl,
-  onClick,
   size = "md",
 }: TopicCardProps) {
   const sizeStyles = {
@@ -31,12 +32,12 @@ function TopicCard({
   const { padding, imageDimensions, textSize, initialSize } = sizeStyles[size];
 
   return (
-    <div
+    <Link
+      to={to}
       className={cn(
         "flex flex-col items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-accent/50",
         padding
       )}
-      onClick={onClick}
     >
       <div
         className={cn(
@@ -62,7 +63,7 @@ function TopicCard({
         )}
       </div>
       <p className={cn("font-medium text-center", textSize)}>{topicName}</p>
-    </div>
+    </Link>
   );
 }
 

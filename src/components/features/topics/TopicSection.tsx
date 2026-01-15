@@ -1,17 +1,11 @@
 import TopicCard from "@features/topics/TopicCard";
 import { useInterestQuery } from "@/hooks/useInterestQuery";
-import { useNavigate } from "react-router-dom";
 
 function TopicSection() {
   const { data: interests, isLoading, error } = useInterestQuery();
-  const navigate = useNavigate();
 
   if (isLoading) return <div>Loading interests...</div>;
   if (error) return <div>Error loading interests: {error.message}</div>;
-
-  const handleNavigateToInterests = () => {
-    navigate("/interests");
-  };
 
   return (
     <div className="py-4">
@@ -20,10 +14,11 @@ function TopicSection() {
           <TopicCard
             key={interest.id}
             topicName={interest.name}
+            to={`/meetings?interestFilter=${interest.id}`}
             imageUrl={""} // TODO: 추후에 이미지 링크 추가
           />
         ))}
-        <TopicCard topicName="전체보기" onClick={handleNavigateToInterests} />
+        <TopicCard topicName="전체보기" to="/interests" />
       </div>
     </div>
   );
