@@ -50,7 +50,7 @@ export const routeList = [
                 element: <ResetPassword />,
             },
             {
-                path: "/extra-info",
+                path: "/user-info",
                 element: <UserInfo />,
             },
             {
