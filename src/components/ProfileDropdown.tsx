@@ -35,12 +35,12 @@ export const ProfileDropdown = () => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>{nickname} 님</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="flex gap-1">
+        <DropdownMenuItem className="flex gap-1" onClick={() => navigate("/mypage")}>
           <AiOutlineUser />
           마이페이지
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="flex gap-1">
+        <DropdownMenuItem className="flex gap-1" onClick={() => navigate("/mypage/joined-meetings")}>
           <AiOutlineTeam />내 모임
         </DropdownMenuItem>
         <DropdownMenuSeparator />
