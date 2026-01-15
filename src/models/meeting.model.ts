@@ -11,17 +11,6 @@ export interface Host {
     bio: string;
 }
 
-// 모임 데이터 모델 (백엔드에서 조회 시)
-export interface Meeting {
-    id: number;
-    title: string;
-    description: string;
-    interestName: string; // 관심사(카테고리)
-    meetingDate: string; // ISO 8601 format
-    location: Location;
-    host: Host;
-}
-
 // 참가자 정보
 export interface Participant {
     id: number;
@@ -30,36 +19,53 @@ export interface Participant {
     isHost?: boolean;
 }
 
-// 모임 상세 정보 (상세 페이지용) - 필요시 확장
-export interface MeetingDetail extends Meeting {
-    maxParticipants?: number;
-    currentParticipants?: number;
-    participants?: Participant[];
-    imageUrl?: string;
+// 모임 목록용 (간단한 정보)
+export interface Meeting {
+  meetingId: number;
+  title: string;
+  interestName: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  address: string;
+  meetingDate: string;
 }
 
-// 모임 목록 조회 API 응답 타입
+// 모임 상세 정보
+export interface MeetingDetail {
+  id: number;
+  title: string;
+  description: string;
+  interestName: string;
+  maxParticipants: number;
+  currentParticipants?: number;
+  meetingDate: string;
+  location: Location;
+  host: Host;
+  participants?: Participant[];
+  imageUrl?: string;
+}
+
+export interface MeetingMeta {
+  totalCount: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface MeetingListResponse {
-    meetings: Meeting[];
-    total: number;
-    page: number;
-    limit: number;
-}
-
-// 모임 상세 조회 API 응답 타입
-export interface MeetingDetailResponse {
-    meeting: MeetingDetail;
+  data: Meeting[];
+  meta: MeetingMeta;
 }
 
 // 모임 생성 API 요청 타입
 export interface CreateMeetingRequest {
   title: string;
   description: string;
-  interestIds: number; // 백엔드에서 단일 값을 받음
+  interestIds: number[];
   maxParticipants: number;
-  meetingDate: string; // ISO 8601 format
+  meetingDate: string;
   address: string;
-  imageUrl?: string; // 클라우드 이미지 URL
+  imageUrl?: string;
 }
 
 // 모임 생성 API 응답 타입
