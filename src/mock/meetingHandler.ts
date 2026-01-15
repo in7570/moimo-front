@@ -48,6 +48,18 @@ export const meetingHandler = [
       // 추가 필드 Mocking
       imageUrl: "https://via.placeholder.com/150",
       interestIds: [1, 2]
+
+      // id: Number(id), 
+      // meetingImage : "https://via.placeholder.com/150",
+      // hostImage : "https://via.placeholder.com/150",
+      // title: "모임 이름", 
+      // description: "상세내용", 
+      // interestName: "관심사(카테고리)", 
+      // maxParticipants: 10, 
+      // currentParticipants: 5, 
+      // meetingDate: "2024-01-30T15:00:00", 
+      // location: { "address": "전체주소", "lat": 37.5, "lng": 127.0 }, 
+      // host: { "nickname": "호스트 명", "bio": "소개" } 
     }, { status: 200 });
   }),
   http.get(`${httpUrl}/meetings`, async ({ request }) => {
@@ -82,7 +94,8 @@ export const meetingHandler = [
     const meta: MeetingMeta = {
       totalCount,
       totalPages,
-      currentPage: page,
+      page,
+      limit,
     };
 
     return HttpResponse.json(
