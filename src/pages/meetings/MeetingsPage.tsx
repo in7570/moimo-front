@@ -25,21 +25,10 @@ const MeetingsPage = () => {
 
   // URL 업데이트 로직
   const updateUrlParams = (newValues: Partial<GetMeetingsParams>) => {
-    const updatedState = {
-      limit,
-      page,
-      sort: filters.sort,
-      interestFilter: filters.interestFilter,
-      finishedFilter: filters.finishedFilter,
-      ...newValues,
-    };
-
-    const newSearchParams = new URLSearchParams();
-    newSearchParams.set("limit", String(updatedState.limit));
-    newSearchParams.set("page", String(updatedState.page));
-    newSearchParams.set("sort", updatedState.sort);
-    newSearchParams.set("interestFilter", updatedState.interestFilter);
-    newSearchParams.set("finishedFilter", String(updatedState.finishedFilter));
+    const newSearchParams = new URLSearchParams(searchParams);
+    Object.entries(newValues).forEach(([key, value]) => {
+      newSearchParams.set(key, String(value));
+    });
 
     setSearchParams(newSearchParams);
   };
