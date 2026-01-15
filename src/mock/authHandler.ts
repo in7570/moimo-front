@@ -14,10 +14,12 @@ export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => 
                 email,
                 nickname: "테스터",
             },
+            accessToken: 'mock-jwt-token',
         }, {
             headers: {
                 'Authorization': 'Bearer mock-jwt-token',
                 'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict'
+                // 'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; SameSite=Lax'
             }
         });
     }
@@ -29,10 +31,11 @@ export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => 
                 email,
                 nickname: "신규유저",
             },
+            accessToken: 'mock-jwt-token-new',
         }, {
             headers: {
                 'Authorization': 'Bearer mock-jwt-token-new',
-                'Set-Cookie': 'refreshToken=mock-refresh-token-new; HttpOnly; Secure; SameSite=Strict'
+                'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict'
             }
         });
     }
@@ -44,7 +47,7 @@ export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => 
 });
 
 // 구글 로그인
-export const googleLogin = http.post(`${httpUrl}/users/login / google`, async ({ request }) => {
+export const googleLogin = http.post(`${httpUrl}/users/login/google`, async ({ request }) => {
     try {
         const { code, redirectUri } = (await request.json()) as any;
         console.log('google login request:', { code, redirectUri });
@@ -55,10 +58,11 @@ export const googleLogin = http.post(`${httpUrl}/users/login / google`, async ({
                 email: "google-user@email.com",
                 nickname: "구글사용자",
             },
+            accessToken: 'mock-jwt-token',
         }, {
             status: 200,
             headers: {
-                'Authorization': `Bearer mock - jwt - token`,
+                'Authorization': 'Bearer mock-jwt-token',
                 'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict'
             }
         });
@@ -78,7 +82,7 @@ export const logout = http.post(`${httpUrl}/users/logout`, async () => {
 });
 
 // 회원가입 핸들러
-export const join = http.post(`${httpUrl} /users/register`, async ({ request }) => {
+export const join = http.post(`${httpUrl}/users/register`, async ({ request }) => {
     const { email, password, nickname } = (await request.json()) as any;
     await delay(1000);
     return HttpResponse.json({
@@ -93,7 +97,8 @@ export const join = http.post(`${httpUrl} /users/register`, async ({ request }) 
             "refreshToken": null,
             "createdAt": "2026-01-07T08:11:07.000Z",
             "updatedAt": "2026-01-07T08:11:07.000Z"
-        }
+        },
+        "accessToken": "mock-jwt-token"
     },
         {
             headers: {
@@ -262,7 +267,9 @@ export const refresh = http.post(`${httpUrl}/users/refresh`, async ({ request })
     await delay(500);
 
     if (cookies?.includes('refreshToken=mock-refresh-token')) {
-        return new HttpResponse(null, {
+        return HttpResponse.json({
+            accessToken: 'new-mock-jwt-token'
+        }, {
             status: 200,
             headers: {
                 'Authorization': 'Bearer new-mock-jwt-token',
@@ -279,9 +286,20 @@ export const refresh = http.post(`${httpUrl}/users/refresh`, async ({ request })
 // 사용자 인증 핸들러
 export const verifyUser = http.get(`${httpUrl}/users/verify`, async ({ request }) => {
     const token = request.headers.get('Authorization');
+    const cookies = request.headers.get('cookie');
     await delay(1000);
 
     if (!token) {
+        // 쿠키가 존재하면 인증 성공으로 처리 (유연한 체크)
+        if (cookies?.includes('refreshToken=')) {
+            return HttpResponse.json({
+                authenticated: true,
+                accessToken: 'mock-jwt-token',
+                message: '쿠키를 통해 인증이 복구되었습니다.',
+                user: { email: "moimo@email.com", nickname: "테스터" }
+            }, { status: 200 });
+        }
+
         return HttpResponse.json({
             authenticated: false,
             message: '인증토큰이 없습니다.',
@@ -292,6 +310,7 @@ export const verifyUser = http.get(`${httpUrl}/users/verify`, async ({ request }
 
     return HttpResponse.json({
         authenticated: true,
+        accessToken: token.replace("Bearer ", ""),
         message: '인증이 완료되었습니다.',
         user: {
             email: "moimo@email.com",

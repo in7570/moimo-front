@@ -154,9 +154,8 @@ export const MeetingFilterControls = ({
         {sortOptions.map((option, index) => (
           <React.Fragment key={option.value}>
             <p
-              className={`cursor-pointer ${
-                filters.sort === option.value ? "" : "text-muted-foreground"
-              }`}
+              className={`cursor-pointer ${filters.sort === option.value ? "" : "text-muted-foreground"
+                }`}
               onClick={() => handleSortChange(option.value)}
             >
               {option.label}

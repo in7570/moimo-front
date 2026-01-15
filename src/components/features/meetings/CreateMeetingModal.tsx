@@ -61,9 +61,9 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
     const confirmed = window.confirm(
       "모임을 생성하시겠습니까?\n\n신청 내용은 마이페이지에서 언제든지 수정 가능합니다."
     );
-    
+
     if (!confirmed) {
-      return; 
+      return;
     }
 
     try {
@@ -86,7 +86,7 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
       });
 
       alert("모임이 생성되었습니다!");
-      
+
       // 폼 초기화
       setMeetingName("");
       setMeetingIntro("");
@@ -95,7 +95,7 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
       setMaxParticipants([15]);
       setSelectedImage(null);
       setSelectedInterests([]);
-      
+
       // 모달 닫기
       onOpenChange(false);
     } catch (error: any) {
@@ -136,8 +136,8 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
           </FormField>
 
           {/* 관심사 선택 */}
-          <FormField 
-            label="관심사" 
+          <FormField
+            label="관심사"
             description="모임과 관련된 관심사를 선택해주세요 (최소 1개)"
           >
             <div className="flex flex-wrap gap-2">
@@ -190,33 +190,33 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
           {/* 모임 날짜 및 시간 */}
           <FormField label="모임 날짜 및 시간" description="모임이 진행될 날짜와 시간을 선택해주세요">
             <div className="space-y-3">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full h-12 justify-start text-left font-normal ",
-                    !meetingDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {meetingDate ? (
-                    format(meetingDate, "PPP", { locale: ko })
-                  ) : (
-                    <span>날짜를 선택하세요</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-35 p-0 " align="start">
-                <Calendar
-                  mode="single"
-                  selected={meetingDate}
-                  onSelect={setMeetingDate}
-                  disabled={(date) => date < new Date()}
-                />
-              </PopoverContent>
-            </Popover>
-            {/* 시간 선택 기능 추가예정 */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full h-12 justify-start text-left font-normal ",
+                      !meetingDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {meetingDate ? (
+                      format(meetingDate, "PPP", { locale: ko })
+                    ) : (
+                      <span>날짜를 선택하세요</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-35 p-0 " align="start">
+                  <Calendar
+                    mode="single"
+                    selected={meetingDate}
+                    onSelect={setMeetingDate}
+                    disabled={(date) => date < new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+              {/* 시간 선택 기능 추가예정 */}
             </div>
           </FormField>
 
@@ -233,8 +233,8 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
           </FormField>
 
           {/* 최대 인원수 */}
-          <FormField 
-            label="최대 인원수" 
+          <FormField
+            label="최대 인원수"
             description="수용할 수 있는 인원수 만큼만 받는게 중요해요!"
           >
             <div className="space-y-4">

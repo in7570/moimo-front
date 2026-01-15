@@ -18,7 +18,8 @@ export interface LoginResponse {
 export const login = async (data: LoginFormValues): Promise<LoginResponse> => {
     try {
         const response = await apiClient.post("/users/login", data);
-        const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        // const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        const accessToken = response.data.accessToken || response.headers.authorization?.replace("Bearer ", "");
         return {
             ...response.data,
             accessToken,
@@ -32,7 +33,8 @@ export const login = async (data: LoginFormValues): Promise<LoginResponse> => {
 export const googleLogin = async (data: { code: string; redirectUri: string }): Promise<LoginResponse> => {
     try {
         const response = await apiClient.post("/users/login/google", data);
-        const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        // const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        const accessToken = response.data.accessToken || response.headers.authorization?.replace("Bearer ", "");
         return {
             ...response.data,
             accessToken,
@@ -64,7 +66,8 @@ export interface JoinResponse {
 export const join = async (data: JoinFormValues): Promise<JoinResponse> => {
     try {
         const response = await apiClient.post("/users/register", data);
-        const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        // const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        const accessToken = response.data.accessToken || response.headers.authorization?.replace("Bearer ", "");
         return {
             ...response.data,
             accessToken,
@@ -139,7 +142,8 @@ export const resetPassword = async (data: ResetPasswordFormValues) => {
 export const refresh = async (): Promise<string | undefined> => {
     try {
         const response = await apiClient.post("/users/refresh");
-        const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        // const accessToken = response.headers.authorization?.replace("Bearer ", "");
+        const accessToken = response.data.accessToken || response.headers.authorization?.replace("Bearer ", "");
         return accessToken;
     } catch (error) {
         console.error("refresh error:", error);
@@ -161,6 +165,19 @@ interface VerifyUserResponse {
 export const verifyUser = async () => {
     try {
         const response = await apiClient.get<VerifyUserResponse>("/users/verify");
+        const headerToken = response.headers.authorization?.replace("Bearer ", "");
+        const bodyToken = response.data.accessToken;
+        const accessToken = bodyToken || headerToken;
+
+        console.log("[auth.api] verifyUser extraction - Body Token:", !!bodyToken, "Header Token:", !!headerToken);
+
+        if (accessToken) {
+            return {
+                ...response.data,
+                accessToken,
+            };
+        }
+
         return response.data;
     } catch (error) {
         console.error("verify error:", error);

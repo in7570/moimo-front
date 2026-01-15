@@ -33,6 +33,8 @@ export const getMeetings = async (
     return response.data;
   } catch (error) {
     console.error("getMeetings error:", error);
+  }
+};
 import type { CreateMeetingRequest, CreateMeetingResponse } from "@/models/meeting.model";
 
 // 이미지 업로드 API (클라우드 업로드)

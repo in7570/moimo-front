@@ -13,6 +13,7 @@ import { Navigate } from "react-router-dom";
 import MoimerIntro from "@/pages/moimer/MoimerIntro";
 import UserInfo from "@/pages/user/UserInfo";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import SampleComp from "@/components/SampleComp";
 
 export const routeList = [
     {
@@ -53,8 +54,15 @@ export const routeList = [
                 element: <MoimerIntro />,
             },
             {
+                path: "/sample",
+                element: <SampleComp />,
+            },
+            {
                 path: "/mypage",
-                element: <MypageSession />,
+                element:
+                    // <ProtectedRoute>
+                    <MypageSession />,
+                // </ProtectedRoute>,
                 children: [
                     {
                         index: true,

@@ -1,4 +1,4 @@
-import { MypageSidebar } from "@/components/MypageSidebar";
+import { MypageSidebar } from "@/components/features/mypage/MypageSidebar";
 import { Outlet } from "react-router-dom";
 
 const MypageSession = () => {

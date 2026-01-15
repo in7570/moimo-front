@@ -1,38 +1,34 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUserInfoQuery } from "@/hooks/useUserInfoQuery";
+import type { UserInfo } from "@/models/user.model";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const MypageSidebar = () => {
-    // TODO: Replace with actual user data from context/store
-    const user = {
-        name: "노래하는 햄스터",
-        isVerified: true,
-        image: "https://github.com/shadcn.png" // Placeholder
-    };
+
+    const { data: user } = useUserInfoQuery();
+
+    if (!user) return null;
 
     return (
         <aside className="w-full h-full bg-white flex flex-col items-center py-10 border-r border-gray-100">
-            {/* User Profile Section */}
+            {/* 프로필 섹션 */}
             <div className="flex flex-col items-center mb-10 w-full px-4">
                 <div className="relative mb-4">
                     <Avatar className="w-24 h-24 border-2 border-gray-100">
-                        <AvatarImage src={user.image} alt={user.name} />
-                        <AvatarFallback>{user.name[0]}</AvatarFallback>
+                        <AvatarImage src={user.image} alt={user.nickname || "user"} />
+                        <AvatarFallback>{user.nickname?.[0] || "U"}</AvatarFallback>
                     </Avatar>
                 </div>
 
                 <div className="flex items-center gap-2 mb-2">
-                    <h2 className="text-xl font-bold text-gray-900">{user.name}</h2>
-                    {user.isVerified && (
-                        <div className="bg-green-500 rounded p-[2px]">
-                            <Check className="w-3 h-3 text-white" strokeWidth={4} />
-                        </div>
-                    )}
+                    <h2 className="text-xl font-bold text-gray-900">{user.nickname || "사용자"}</h2>
+                    <div className="bg-green-500 rounded p-[2px]">
+                        <Check className="w-3 h-3 text-white" strokeWidth={4} />
+                    </div>
                 </div>
 
-                {user.isVerified && (
-                    <p className="text-sm text-gray-400">인증 완료된 계정입니다.</p>
-                )}
+                <p className="text-sm text-gray-400">인증 완료된 계정입니다.</p>
             </div>
 
             {/* Navigation Menu */}
@@ -55,18 +51,12 @@ export const MypageSidebar = () => {
                             </Link>
                         </div>
                     </div>
-
-                    <div>
-                        <Link to="/mypage/chat" className="block text-lg font-bold text-gray-900 hover:text-gray-700">
-                            채팅
-                        </Link>
-                    </div>
                 </div>
             </nav>
 
             {/* Footer */}
             <div className="w-full px-8 mt-auto">
-                <button className="text-gray-400 hover:text-gray-600 text-sm">
+                <button className="text-gray-400 hover:text-gray-600 text-sm" disabled>
                     탈퇴하기
                 </button>
             </div>

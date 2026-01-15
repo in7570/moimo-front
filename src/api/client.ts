@@ -30,12 +30,15 @@ export const createClient = (config?: AxiosRequestConfig) => {
         const isPublicEndpoint = publicEndpoints.some(endpoint => config.url?.includes(endpoint));
 
         if (accessToken && !isPublicEndpoint) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
+            config.headers.set('Authorization', `Bearer ${accessToken}`);
+            console.log(`[apiClient] Requesting ${config.url} with token (exists: ${!!accessToken})`);
+        } else if (!isPublicEndpoint) {
+            console.warn(`[apiClient] Requesting ${config.url} WITHOUT token!`);
         }
 
         // FormData 전송 시 Content-Type 헤더 제거 (브라우저가 자동으로 boundary 포함하여 설정)
         if (config.data instanceof FormData) {
-            delete config.headers['Content-Type'];
+            config.headers.delete('Content-Type');
         }
 
         return config;
