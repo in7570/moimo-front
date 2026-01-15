@@ -169,8 +169,6 @@ export const verifyUser = async () => {
         const bodyToken = response.data.accessToken;
         const accessToken = bodyToken || headerToken;
 
-        console.log("[auth.api] verifyUser extraction - Body Token:", !!bodyToken, "Header Token:", !!headerToken);
-
         if (accessToken) {
             return {
                 ...response.data,

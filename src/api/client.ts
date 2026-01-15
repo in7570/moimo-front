@@ -13,27 +13,22 @@ export const createClient = (config?: AxiosRequestConfig) => {
     });
 
     // 인증이 필요 없는 API 목록
-    const publicEndpoints = [
-        '/users/login',
-        '/users/register',
-        '/users/check-email',
-        '/users/check-nickname',
-        '/users/find-password',
-        '/users/reset-password'
-    ];
+    // const publicEndpoints = [
+    //     '/users/login',
+    //     '/users/register',
+    //     '/users/find-password',
+    //     '/users/reset-password'
+    // ];
 
     // 요청 인터셉터 : 매 요청마다 최신 토큰 헤더에 추가
     axiosInstance.interceptors.request.use((config) => {
         const { accessToken } = useAuthStore.getState();
 
         // public API가 아닐 경우에만 토큰 추가
-        const isPublicEndpoint = publicEndpoints.some(endpoint => config.url?.includes(endpoint));
+        // const isPublicEndpoint = publicEndpoints.some(endpoint => config.url?.includes(endpoint));
 
-        if (accessToken && !isPublicEndpoint) {
+        if (accessToken) {
             config.headers.set('Authorization', `Bearer ${accessToken}`);
-            console.log(`[apiClient] Requesting ${config.url} with token (exists: ${!!accessToken})`);
-        } else if (!isPublicEndpoint) {
-            console.warn(`[apiClient] Requesting ${config.url} WITHOUT token!`);
         }
 
         // FormData 전송 시 Content-Type 헤더 제거 (브라우저가 자동으로 boundary 포함하여 설정)
@@ -53,10 +48,10 @@ export const createClient = (config?: AxiosRequestConfig) => {
             const originalRequest = error.config;
 
             // public API 요청에서 발생한 401은 갱신 시도하지 않음
-            const isPublicEndpoint = publicEndpoints.some(endpoint => originalRequest.url?.includes(endpoint));
+            // const isPublicEndpoint = publicEndpoints.some(endpoint => originalRequest.url?.includes(endpoint));
 
             // 401 에러이고, 재시도한 적이 없는 요청일 때
-            if (error.response?.status === 401 && !originalRequest._retry && !isPublicEndpoint) {
+            if (error.response?.status === 401 && !originalRequest._retry) {
                 originalRequest._retry = true;
 
                 try {
