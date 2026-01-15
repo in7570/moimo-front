@@ -60,9 +60,9 @@ export const routeList = [
             {
                 path: "/mypage",
                 element:
-                    // <ProtectedRoute>
-                    <MypageSession />,
-                // </ProtectedRoute>,
+                    <ProtectedRoute>
+                        <MypageSession />,
+                    </ProtectedRoute>,
                 children: [
                     {
                         index: true,

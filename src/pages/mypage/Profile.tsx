@@ -6,13 +6,14 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import ProfileModal from "@/components/features/mypage/ProfileModal";
 import { useUserInfoQuery } from "@/hooks/useUserInfoQuery";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const Profile = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { data: userInfo, isLoading } = useUserInfoQuery();
 
     if (isLoading) {
-        return <div className="p-10">로딩 중...</div>;
+        return <LoadingSpinner />;
     }
 
     return (
