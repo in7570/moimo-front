@@ -40,10 +40,16 @@ export interface MeetingDetail {
   currentParticipants: number;
   meetingDate: string;
   meetingImage?: string;
-  location: Location;
-  host: Host & { hostImage?: string };
-  participants?: Participant[];
-  imageUrl?: string;
+  location: {
+    address: string;
+    lat: number;
+    lng: number;
+  };
+  host: {
+    nickname: string;
+    bio: string;
+    hostImage: string | null;
+  };
 }
 
 export interface MeetingMeta {
