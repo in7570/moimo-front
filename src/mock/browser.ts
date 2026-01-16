@@ -5,10 +5,12 @@ import {
   checkEmail,
   checkNickname,
   findPassword,
+  verifyResetCode,
   resetPassword,
   googleLogin,
   logout,
   refresh,
+  verifyUser
 } from "./authHandler";
 import { meetingHandler } from "./meetingHandler";
 import { getInterests } from "./interestHandler";
@@ -20,12 +22,15 @@ const handlers = [
   checkEmail,
   checkNickname,
   findPassword,
+  verifyResetCode,
   resetPassword,
   googleLogin,
   logout,
   refresh,
+  verifyUser,
   getInterests,
   userUpdate,
   ...meetingHandler,
 ];
+
 export const worker = setupWorker(...handlers);

@@ -1,8 +1,9 @@
 import { apiClient } from "@/api/client";
-import type {
-  MeetingListResponse,
-  CreateMeetingRequest,
-  CreateMeetingResponse,
+import type { 
+  MeetingListResponse, 
+  MeetingDetail,
+  CreateMeetingRequest, 
+  CreateMeetingResponse 
 } from "@/models/meeting.model";
 
 export type SortType = "NEW" | "UPDATE" | "DEADLINE" | "POPULAR";
@@ -37,6 +38,22 @@ export const getMeetings = async (
     return response.data;
   } catch (error) {
     console.error("getMeetings error:", error);
+    throw error;
+  }
+};
+
+// 모임 상세 조회 API
+export const getMeetingById = async (
+  meetingId: string | number
+): Promise<MeetingDetail> => {
+  try {
+    const response = await apiClient.get<MeetingDetail>(
+      `/meetings/${meetingId}`
+    );
+    console.log("📡 API 응답 (meeting.api.ts):", response.data);
+    return response.data; // 백엔드가 직접 모임 데이터를 반환
+  } catch (error) {
+    console.error("getMeetingById error:", error);
     throw error;
   }
 };

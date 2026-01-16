@@ -12,8 +12,10 @@ import HostMeeting from "@/pages/mypage/HostMeeting";
 import { Navigate } from "react-router-dom";
 import MoimerIntro from "@/pages/moimer/MoimerIntro";
 import UserInfo from "@/pages/user/UserInfo";
+import Chatting from "@/pages/chat/Chatting";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Interests from "@/pages/interests/Interests";
+import SampleComp from "@/components/SampleComp";
 
 export const routeList = [
   {
@@ -55,7 +57,10 @@ export const routeList = [
       },
       {
         path: "/mypage",
-        element: <MypageSession />,
+        element:
+          <ProtectedRoute>
+            <MypageSession />,
+          </ProtectedRoute>,
         children: [
           {
             index: true,
