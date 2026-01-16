@@ -11,6 +11,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -18,11 +19,14 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const { isLoggedIn } = useAuthStore();
-    const { isLoading } = useAuthQuery();
+    const { isLoading, isFetching } = useAuthQuery();
     const navigate = useNavigate();
 
-    if (isLoading) {
-        return <div className="flex h-full w-full items-center justify-center min-h-[400px]">Loading...</div>;
+    // 1. 인증 정보 확인 중일 때 (최초 로딩 또는 페이지 새로고침 시 검증 중)
+    if (isLoading || isFetching) {
+        return (
+            <LoadingSpinner />
+        );
     }
 
     if (!isLoggedIn) {

@@ -7,16 +7,18 @@ export const useAuthQuery = () => {
         queryKey: ["authUser"],
         queryFn: async () => {
             const { accessToken: currentToken, storeLogin, storeLogout, isLoggedIn } = useAuthStore.getState();
+
             try {
                 const verifyUserInfo = await verifyUser();
+
                 if (verifyUserInfo.authenticated) {
-                    // 새 토큰이 있으면 새 토큰 사용, 없으면 기존 토큰 유지
-                    const tokenToStore = verifyUserInfo.accessToken || currentToken;
-                    storeLogin(verifyUserInfo.user.nickname, tokenToStore!);
+                    // 중요: 인터셉터가 토큰을 갱신했을 수 있으므로 최신 상태를 확인합니다.
+                    const latestToken = useAuthStore.getState().accessToken;
+                    const tokenToStore = verifyUserInfo.accessToken || latestToken || currentToken;
+
+                    storeLogin(verifyUserInfo.nickname, tokenToStore!);
                     return verifyUserInfo;
                 }
-
-                // 인증 실패 시 로그인 상태였으면 로그아웃 처리
                 if (isLoggedIn) {
                     storeLogout();
                 }

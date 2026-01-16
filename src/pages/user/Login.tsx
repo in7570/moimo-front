@@ -79,7 +79,6 @@ const Login = () => {
                 code: codeResponse.code,
                 redirectUri: 'postmessage' // Auth Code 방식에서는 'postmessage' 고정
             });
-            console.log(loginInfo);
 
             if (loginInfo.user.isNewUser) {
                 navigate("/user-info", {

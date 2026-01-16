@@ -57,9 +57,9 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
     const confirmed = window.confirm(
       "모임을 생성하시겠습니까?\n\n신청 내용은 마이페이지에서 언제든지 수정 가능합니다."
     );
-    
+
     if (!confirmed) {
-      return; 
+      return;
     }
 
     try {
@@ -93,7 +93,7 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
       });
 
       alert("모임이 생성되었습니다!");
-      
+
       // 폼 초기화
       setMeetingName("");
       setMeetingIntro("");
@@ -227,8 +227,8 @@ function CreateMeetingModal({ open, onOpenChange }: CreateMeetingModalProps) {
           </FormField>
 
           {/* 최대 인원수 */}
-          <FormField 
-            label="최대 인원수" 
+          <FormField
+            label="최대 인원수"
             description="수용할 수 있는 인원수 만큼만 받는게 중요해요!"
           >
             <div className="space-y-4">

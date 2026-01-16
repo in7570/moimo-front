@@ -1,13 +1,19 @@
+import type { Interest } from "./interest.model";
+
 export interface User {
     id: number;
     email: string;
     nickname: string;
     bio?: string;
-    resetCode?: string;
+    resetToken?: string;
     refreshToken?: string;
-    image?: string;
+    profile_image?: string;  // image에서 profile_image로 통일
     createdAt: Date;
     updatedAt?: Date;
+}
+
+export type UserInfo = Partial<User> & {
+    interests: Interest[];
 }
 
 export interface SocialAccounts {
