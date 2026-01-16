@@ -210,7 +210,12 @@ export const mockParticipants: Record<number, Participant[]> = {
       nickname: "러너K",
       profileImage: "https://picsum.photos/200?random=10",
       status: "ACCEPTED",
-      isHost: true,
+      bio: "부산에서 러닝을 즐기는 3년차 러너입니다. 함께 달려요!",
+      interests: [
+        { id: 5, name: "스포츠/운동" },
+        { id: 18, name: "건강" },
+        { id: 15, name: "여행" }
+      ]
     },
     {
       participationId: 2,
@@ -218,6 +223,12 @@ export const mockParticipants: Record<number, Participant[]> = {
       nickname: "마라톤왕",
       profileImage: "https://picsum.photos/200?random=11",
       status: "PENDING",
+      bio: "풀코스 완주 5회 경력있습니다.",
+      interests: [
+        { id: 5, name: "스포츠/운동" },
+        { id: 8, name: "공예/만들기" },
+        { id: 24, name: "식물/자연" }
+      ]
     },
     {
       participationId: 3,
@@ -225,6 +236,12 @@ export const mockParticipants: Record<number, Participant[]> = {
       nickname: "달리기조아",
       profileImage: "https://picsum.photos/200?random=12",
       status: "PENDING",
+      bio: "가볍게 뛰는 거 좋아해요~",
+      interests: [
+        { id: 5, name: "스포츠/운동" },
+        { id: 6, name: "음식" },
+        { id: 10, name: "차/음료" }
+      ]
     },
   ],
   106: [
@@ -234,7 +251,12 @@ export const mockParticipants: Record<number, Participant[]> = {
       nickname: "게이머A",
       profileImage: "https://picsum.photos/200?random=20",
       status: "ACCEPTED",
-      isHost: true,
+      bio: "롤 하실 분 구함",
+      interests: [
+        { id: 14, name: "게임/액티비티" },
+        { id: 2, name: "술" },
+        { id: 20, name: "엔터" }
+      ]
     },
     {
       participationId: 5,
@@ -242,6 +264,12 @@ export const mockParticipants: Record<number, Participant[]> = {
       nickname: "축구팬B",
       profileImage: "https://picsum.photos/200?random=21",
       status: "PENDING",
+      bio: "해외 축구 보는 거 좋아합니다.",
+      interests: [
+        { id: 5, name: "스포츠/운동" },
+        { id: 22, name: "트렌드" },
+        { id: 3, name: "자기계발/공부" }
+      ]
     },
   ]
 };

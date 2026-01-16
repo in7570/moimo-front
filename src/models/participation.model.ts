@@ -1,3 +1,5 @@
+import type { Interest } from "./interest.model";
+
 export type Attendance = 'ATTENDANCE' | 'ABSENT';                      // 출석체크 : 참석, 결석
 export type ParticipationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED'; // 참여상태 : 대기, 승인, 거절
 
@@ -15,7 +17,8 @@ export interface Participant {
     participationId: number;
     userId: number;
     nickname: string;
-    profileImage: string;
+    profileImage: string | null;
     status: ParticipationStatus;
-    isHost?: boolean;
+    bio: string | null;
+    interests: Interest[];
 }
