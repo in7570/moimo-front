@@ -8,7 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import FormField from "@components/common/FormField";
-import { useCreateMeetingMutation } from "@/hooks/useMeetingMutations";
+import { useCreateMeetingMutation, useUpdateMeetingMutation } from "@/hooks/useMeetingMutations";
 import { useMeetingQuery } from "@/hooks/useMeetingQuery";
 import { TOPIC_CATEGORIES } from "@/constants/topics";
 import { format } from "date-fns";
@@ -32,7 +32,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
   const [location, setLocation] = useState("");
   const [maxParticipants, setMaxParticipants] = useState([15]);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [selectedInterests, setSelectedInterests] = useState<number[]>([]);
+  const [selectedInterestId, setSelectedInterestId] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const { data: meetingDetail, isLoading: isMeetingLoading } = useMeetingQuery(
@@ -45,12 +45,16 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
         setMeetingName(meetingDetail.title);
         setMeetingIntro(meetingDetail.description || "");
         setMeetingDate(meetingDetail.meetingDate ? new Date(meetingDetail.meetingDate) : undefined);
-        setLocation(meetingDetail.address);
+        setLocation(meetingDetail.location.address);
         setMaxParticipants([meetingDetail.maxParticipants]);
-        // Cast to any because MeetingDetail might not officially have interestIds/imageUrl yet (pending backend update)
-        // But our mock returns them.
-        setSelectedInterests((meetingDetail as any).interestIds || []);
-        setPreviewUrl((meetingDetail as any).imageUrl || null);
+
+        // Find interest ID by name
+        const matchedInterest = TOPIC_CATEGORIES.find(
+          c => c.name === meetingDetail.interestName
+        );
+        setSelectedInterestId(matchedInterest ? matchedInterest.id : null);
+
+        setPreviewUrl(meetingDetail.meetingImage || null);
         setSelectedImage(null);
       } else if (!meeting) {
         // Reset for new meeting
@@ -60,13 +64,14 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
         setLocation("");
         setMaxParticipants([15]);
         setSelectedImage(null);
-        setSelectedInterests([]);
+        setSelectedInterestId(null);
         setPreviewUrl(null);
       }
     }
   }, [open, meeting, meetingDetail]);
 
   const createMeetingMutation = useCreateMeetingMutation();
+  const updateMeetingMutation = useUpdateMeetingMutation();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -75,11 +80,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
   };
 
   const toggleInterest = (interestId: number) => {
-    setSelectedInterests((prev) =>
-      prev.includes(interestId)
-        ? prev.filter((id) => id !== interestId)
-        : [...prev, interestId]
-    );
+    setSelectedInterestId((prev) => (prev === interestId ? null : interestId));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,13 +91,16 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
       return;
     }
 
-    if (selectedInterests.length === 0) {
-      alert("관심사를 최소 1개 이상 선택해주세요.");
+    if (!selectedInterestId) {
+      alert("관심사를 선택해주세요.");
       return;
     }
 
     const confirmed = window.confirm(
-      "모임을 생성하시겠습니까?\n\n신청 내용은 마이페이지에서 언제든지 수정 가능합니다."
+      meeting ?
+        "모임을 수정하시겠습니까?"
+        :
+        "모임을 생성하시겠습니까?\n\n신청 내용은 마이페이지에서 언제든지 수정 가능합니다."
     );
 
     if (!confirmed) {
@@ -105,24 +109,37 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
 
     try {
       // 1단계: 이미지가 있으면 먼저 업로드 (프론트에서 이미지 업로드한다고 가정)
-      let imageUrl: string | undefined;
+      let meetingImage: string | undefined;
       if (selectedImage) {
         const { uploadImage } = await import("@/api/meeting.api");
-        imageUrl = await uploadImage(selectedImage);
+        meetingImage = await uploadImage(selectedImage);
+      } else if (previewUrl) {
+        meetingImage = previewUrl; // 기존 이미지 유지시
       }
 
       // 2단계: 모임 생성 (이미지 URL 포함)
-      await createMeetingMutation.mutateAsync({
+      const meetingData = {
         title: meetingName,
         description: meetingIntro,
-        interestIds: selectedInterests,
+        interestId: selectedInterestId!,
         maxParticipants: maxParticipants[0],
         meetingDate: meetingDate.toISOString(),
         address: location,
-        imageUrl, // 클라우드 URL
-      });
+        meetingImage,
+      };
 
-      alert("모임이 생성되었습니다!");
+      if (meeting) {
+        // 수정 모드
+        await updateMeetingMutation.mutateAsync({
+          id: (meeting as any).id || (meeting as any).meetingId,
+          data: meetingData
+        });
+        alert("모임이 수정되었습니다!");
+      } else {
+        // 생성 모드
+        await createMeetingMutation.mutateAsync(meetingData);
+        alert("모임이 생성되었습니다!");
+      }
 
       // 폼 초기화
       setMeetingName("");
@@ -131,7 +148,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
       setLocation("");
       setMaxParticipants([15]);
       setSelectedImage(null);
-      setSelectedInterests([]);
+      setSelectedInterestId(null);
 
       // 모달 닫기
       onOpenChange(false);
@@ -188,17 +205,17 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
                 {TOPIC_CATEGORIES.map((interest) => (
                   <Badge
                     key={interest.id}
-                    variant={selectedInterests.includes(interest.id) ? "default" : "outline"}
+                    variant={selectedInterestId === interest.id ? "default" : "outline"}
                     className={cn(
                       "cursor-pointer transition-colors px-4 py-2 text-sm",
-                      selectedInterests.includes(interest.id)
+                      selectedInterestId === interest.id
                         ? "bg-primary text-primary-foreground hover:bg-primary/90"
                         : "hover:bg-secondary"
                     )}
                     onClick={() => toggleInterest(interest.id)}
                   >
                     {interest.name}
-                    {selectedInterests.includes(interest.id) && (
+                    {selectedInterestId === interest.id && (
                       <X className="ml-1 h-3 w-3" />
                     )}
                   </Badge>
@@ -303,17 +320,17 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 className="flex-1 h-12"
-                disabled={createMeetingMutation.isPending}
+                disabled={createMeetingMutation.isPending || updateMeetingMutation.isPending}
               >
                 취소
               </Button>
               <Button
                 type="submit"
                 className="flex-1 h-12 bg-primary hover:bg-primary/90 text-primary-foreground"
-                disabled={createMeetingMutation.isPending}
+                disabled={createMeetingMutation.isPending || updateMeetingMutation.isPending}
               >
                 {meeting ?
-                  (createMeetingMutation.isPending ? "수정 중..." : "수정하기") :
+                  (updateMeetingMutation.isPending ? "수정 중..." : "수정하기") :
                   (createMeetingMutation.isPending ? "신청 중..." : "신청하기")
                 }
               </Button>

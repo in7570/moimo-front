@@ -23,27 +23,34 @@ export interface MeetingListResponse {
 
 export interface MeetingDetail {
   id: number;
+  meetingImage?: string;
+  hostImage?: string;
   title: string;
   description: string;
+  interestName: string;
   maxParticipants: number;
+  currentParticipants: number;
   meetingDate: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  hostId: number;
-  createdAt: string;
-  updatedAt?: string;
+  location: {
+    address: string;
+    lat: number;
+    lng: number;
+  };
+  host: {
+    nickname: string;
+    bio: string;
+  };
 }
 
 // 모임 생성 API 요청 타입
 export interface CreateMeetingRequest {
   title: string;
   description: string;
-  interestIds: number[];
+  interestId: number;
   maxParticipants: number;
   meetingDate: string; // ISO 8601 format
   address: string;
-  imageUrl?: string; // 클라우드 이미지 URL
+  meetingImage?: string; // 클라우드 이미지 URL
 }
 
 // 모임 생성 API 응답 타입

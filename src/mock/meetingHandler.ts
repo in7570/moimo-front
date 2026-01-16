@@ -1,9 +1,98 @@
-// src/mock/meetingHandler.ts
 import { http, HttpResponse, delay } from "msw";
 import { mockMeetings, httpUrl } from "./mockData";
-import type { MeetingMeta } from "@/models/meeting.model";
+import type { MeetingMeta, CreateMeetingRequest } from "@/models/meeting.model";
 
 export const meetingHandler = [
+  // 모임 생성
+  http.post(`${httpUrl}/meetings`, async ({ request }) => {
+    await delay(500);
+    const token = request.headers.get("Authorization");
+    if (!token) {
+      return HttpResponse.json(
+        { message: "토큰이 없습니다." },
+        { status: 401 }
+      );
+    }
+
+    try {
+      const body = (await request.json()) as CreateMeetingRequest;
+
+      // 필수 필드 체크 (간단한 예시)
+      if (!body.title || !body.address) {
+        return HttpResponse.json(
+          { message: "필수 정보가 누락되었습니다." },
+          { status: 400 }
+        );
+      }
+
+      // 도로명 주소 검증 Mock logic (예: "없는주소"가 포함되면 에러)
+      if (body.address.includes("없는주소")) {
+        return HttpResponse.json(
+          { message: "도로명 주소를 찾을 수 없습니다." },
+          { status: 400 }
+        );
+      }
+
+      const newMeetingId = mockMeetings.length + 100; // 겹치지 않게
+
+      return HttpResponse.json({
+        success: true,
+        meetingId: newMeetingId,
+        message: "모임이 성공적으로 생성되었습니다."
+      }, { status: 201 });
+
+    } catch (error) {
+      return HttpResponse.json(
+        { message: "잘못된 요청입니다." },
+        { status: 400 }
+      );
+    }
+  }),
+
+  // 모임 수정
+  http.put(`${httpUrl}/meetings/:id`, async ({ request, params }) => {
+    await delay(500);
+    const { id } = params;
+    const token = request.headers.get("Authorization");
+    if (!token) {
+      return HttpResponse.json(
+        { message: "토큰이 없습니다." },
+        { status: 401 }
+      );
+    }
+
+    try {
+      const body = (await request.json()) as CreateMeetingRequest;
+
+      if (!body.title || !body.address) {
+        return HttpResponse.json(
+          { message: "필수 정보가 누락되었습니다." },
+          { status: 400 }
+        );
+      }
+
+      // 도로명 주소 검증 Mock logic
+      if (body.address.includes("없는주소")) {
+        return HttpResponse.json(
+          { message: "도로명 주소를 찾을 수 없습니다." },
+          { status: 400 }
+        );
+      }
+
+      return HttpResponse.json({
+        success: true,
+        meetingId: Number(id),
+        message: "모임이 성공적으로 수정되었습니다."
+      }, { status: 200 });
+
+    } catch (error) {
+      return HttpResponse.json(
+        { message: "잘못된 요청입니다." },
+        { status: 400 }
+      );
+    }
+  }),
+
   http.get(`${httpUrl}/meetings/:id`, async ({ params }) => {
     await delay(300);
     const { id } = params;
@@ -15,19 +104,24 @@ export const meetingHandler = [
     if (meeting) {
       return HttpResponse.json({
         id: meeting.meetingId,
+        meetingImage: "https://via.placeholder.com/600x400",
+        hostImage: "https://via.placeholder.com/50",
         title: meeting.title,
         description: "이것은 모임 상세 설명입니다. 자유롭게 수정해보세요!",
+        interestName: meeting.interestName,
         maxParticipants: meeting.maxParticipants,
+        currentParticipants: meeting.currentParticipants,
         meetingDate: meeting.meetingDate,
-        address: meeting.address,
-        latitude: 37.5665,
-        longitude: 126.9780,
-        hostId: 1, // Mock host ID
-        createdAt: new Date().toISOString(),
-        // MeetingDetail에는 없지만 프론트에서 필요한 추가 필드가 있다면 여기서 처리 (예: interestIds, imageUrl)
-        // 하지만 MeetingDetail 타입에 맞춰야 함.
-        // 현재 MeetingDetail에는 imageUrl, interestIds가 없음. 모델 수정 필요 가능성 있음.
-      } as any, { status: 200 }); // Type assertion for now if fields are missing in MeetingDetail
+        location: {
+          address: meeting.address,
+          lat: 37.5665,
+          lng: 126.9780
+        },
+        host: {
+          nickname: "개최자 닉네임",
+          bio: "호스트의 한줄 소개입니다."
+        }
+      } as any, { status: 200 });
     }
 
     // myMeetings에서 찾기 (HostMeeting에서 클릭 시 이쪽일 가능성 높음)
@@ -36,30 +130,23 @@ export const meetingHandler = [
 
     return HttpResponse.json({
       id: Number(id),
+      meetingImage: "https://via.placeholder.com/600x400",
+      hostImage: "https://via.placeholder.com/50",
       title: "Mock Detail Title",
       description: "상세 설명 Mock 데이터입니다.",
+      interestName: "자기계발/공부",
       maxParticipants: 10,
+      currentParticipants: 3,
       meetingDate: new Date().toISOString(),
-      address: "서울 어딘가",
-      latitude: 37.0,
-      longitude: 127.0,
-      hostId: 1,
-      createdAt: new Date().toISOString(),
-      // 추가 필드 Mocking
-      imageUrl: "https://via.placeholder.com/150",
-      interestIds: [1, 2]
-
-      // id: Number(id), 
-      // meetingImage : "https://via.placeholder.com/150",
-      // hostImage : "https://via.placeholder.com/150",
-      // title: "모임 이름", 
-      // description: "상세내용", 
-      // interestName: "관심사(카테고리)", 
-      // maxParticipants: 10, 
-      // currentParticipants: 5, 
-      // meetingDate: "2024-01-30T15:00:00", 
-      // location: { "address": "전체주소", "lat": 37.5, "lng": 127.0 }, 
-      // host: { "nickname": "호스트 명", "bio": "소개" } 
+      location: {
+        address: "서울 어딘가",
+        lat: 37.0,
+        lng: 127.0
+      },
+      host: {
+        nickname: "호스트 명",
+        bio: "소개"
+      }
     }, { status: 200 });
   }),
   http.get(`${httpUrl}/meetings`, async ({ request }) => {
