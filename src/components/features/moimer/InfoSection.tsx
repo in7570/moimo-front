@@ -1,7 +1,7 @@
 interface InfoSectionProps {
   title: string;
   description: string;
-  illustration?: React.ReactNode;
+  illustration?: string;
 }
 
 function InfoSection({ title, description, illustration }: InfoSectionProps) {
@@ -16,7 +16,7 @@ function InfoSection({ title, description, illustration }: InfoSectionProps) {
         </div>
         {illustration && (
           <div className="flex-1 flex justify-center items-center">
-            {illustration}
+            <img src={illustration} alt={title} className="w-full h-auto max-w-md rounded-lg" />
           </div>
         )}
       </div>
