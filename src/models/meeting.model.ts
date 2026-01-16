@@ -57,15 +57,36 @@ export interface MeetingListResponse {
   meta: MeetingMeta;
 }
 
+export interface MeetingDetail {
+  id: number;
+  title: string;
+  meetingImage?: string;
+  description: string;
+  interestName: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  meetingDate: string;
+  location: {
+    address: string;
+    lat: number;
+    lng: number;
+  };
+  host: {
+    nickname: string;
+    bio: string;
+    hostImage?: string;
+  };
+}
+
 // 모임 생성 API 요청 타입
 export interface CreateMeetingRequest {
   title: string;
   description: string;
-  interestIds: number[];
+  interestId: number;
   maxParticipants: number;
   meetingDate: string;
   address: string;
-  imageUrl?: string;
+  meetingImage?: string; // 클라우드 이미지 URL
 }
 
 // 모임 생성 API 응답 타입

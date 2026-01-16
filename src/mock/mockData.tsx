@@ -1,3 +1,4 @@
+import type { MyMeetingsResponse } from "@/api/me.api";
 import type { Interest } from "@/models/interest.model";
 import type { Meeting } from "@/models/meeting.model";
 
@@ -103,21 +104,99 @@ export const interestCategories: Interest[] = [
   },
 ];
 
-export const mockMeetings: Meeting[] = Array.from({ length: 25 }, (_, i) => {
-  const interestName = i % 2 === 0 ? "자기계발/공부" : "스포츠/운동";
-  const interestId = interestCategories.find(
-    (cat) => cat.name === interestName
-  )?.id;
+export const mockMeetings: Meeting[] = Array.from({ length: 25 }, (_, i) => ({
+  meetingId: i + 1,
+  title: `모임 제목 ${i + 1}`,
+  interestName: i % 2 === 0 ? "자기계발/공부" : "스포츠/운동",
+  maxParticipants: 10,
+  currentParticipants: i % 10,
+  address: `서울시 강남구 역삼동 ${i + 1}번지`,
+  meetingDate: `2024-03-${String((i % 28) + 1).padStart(2, '0')}T1${i % 9}:00:00`,
+}));
 
-  return {
-    meetingId: i + 1,
-    title: `모임 제목 ${i + 1}`,
-    interestName: interestName,
-    interestId: interestId || 1,
-    maxParticipants: 10,
-    currentParticipants: i % 10,
-    address: `서울시 강남구 역삼동 ${i + 1}번지`,
-    meetingDate: `2024-03-${(i % 28) + 1}T1${i % 9}:00:00`,
-    meetingStatus: "OPEN",
-  };
-});
+export const myMeetings: MyMeetingsResponse[] = [
+  {
+    meetingId: 1,
+    title: "부산대학교 러닝 크루 모집",
+    interestName: "스포츠/운동",
+    maxParticipants: 8,
+    currentParticipants: 1,
+    address: "부산광역시 수영구 광안해변로 219",
+    meetingDate: "2026-02-14T19:00:00.000Z",
+    status: "ACCEPTED",
+    isHost: true,
+    isCompleted: false
+  },
+  {
+    meetingId: 101,
+    title: "같이 축구보고 게임해요!",
+    interestName: "스포츠/운동",
+    address: "이태원",
+    meetingDate: "2024-01-15T19:00:00Z",
+    currentParticipants: 2,
+    maxParticipants: 52,
+    status: "ACCEPTED",
+    isHost: false,
+    isCompleted: false
+  },
+  {
+    meetingId: 102,
+    title: "보라매공원 경찰과 도둑 할 사람",
+    interestName: "스포츠/운동",
+    address: "보라매공원",
+    meetingDate: "2024-01-07T19:00:00Z",
+    currentParticipants: 12,
+    maxParticipants: 52,
+    status: "PENDING",
+    isHost: false,
+    isCompleted: false
+  },
+  {
+    meetingId: 103,
+    title: "내가 만든 모임1",
+    interestName: "스포츠/운동",
+    address: "우리집",
+    meetingDate: "2024-01-06T19:00:00Z",
+    currentParticipants: 12,
+    maxParticipants: 52,
+    status: "ACCEPTED",
+    isHost: true,
+    isCompleted: true
+  },
+  {
+    meetingId: 104,
+    title: "크리스마스 기념 정모",
+    interestName: "스포츠/운동",
+    address: "이태원",
+    meetingDate: "2023-12-25T19:00:00Z",
+    currentParticipants: 12,
+    maxParticipants: 52,
+    status: "ACCEPTED",
+    isHost: false,
+    isCompleted: true
+  },
+  {
+    meetingId: 105,
+    title: "크리스마스 기념 정모",
+    interestName: "스포츠/운동",
+    address: "이태원",
+    meetingDate: "2023-12-25T19:00:00Z",
+    currentParticipants: 12,
+    maxParticipants: 52,
+    status: "ACCEPTED",
+    isHost: false,
+    isCompleted: true
+  },
+  {
+    meetingId: 106,
+    title: "내가 만든 모임2",
+    interestName: "스포츠/운동",
+    address: "우리집",
+    currentParticipants: 12,
+    maxParticipants: 20,
+    meetingDate: "2024-01-26T19:00:00Z",
+    status: "ACCEPTED",
+    isHost: true,
+    isCompleted: false,
+  }
+];
