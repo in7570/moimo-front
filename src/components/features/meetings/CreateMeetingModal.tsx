@@ -3,18 +3,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Slider } from "@/components/ui/slider";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import FormField from "@components/common/FormField";
 import { useCreateMeetingMutation, useUpdateMeetingMutation } from "@/hooks/useMeetingMutations";
 import { useMeetingQuery } from "@/hooks/useMeetingQuery";
 import DateTimePicker from "@components/common/DateTimePicker";
 import { TOPIC_CATEGORIES } from "@/constants/topics";
-import { Upload, X } from "lucide-react";
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
+import { CalendarIcon, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Meeting } from "@/models/meeting.model";
 import type { MyMeetingsResponse } from "@/api/me.api";
-import LoadingSpinner from "@components/common/LoadingSpinner"; // Ensure this exists or use text
+import LoadingSpinner from "@components/common/LoadingSpinner";
+import { useInterestQuery } from "@/hooks/useInterestQuery";
 
 interface CreateMeetingModalProps {
   open: boolean;
@@ -34,6 +39,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedInterestId, setSelectedInterestId] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { data: interests } = useInterestQuery();
 
   const { data: meetingDetail, isLoading: isMeetingLoading } = useMeetingQuery(
     open && meeting ? (meeting as any).id || (meeting as any).meetingId : undefined
@@ -49,7 +55,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
         setMaxParticipants([meetingDetail.maxParticipants]);
 
         // Find interest ID by name
-        const matchedInterest = TOPIC_CATEGORIES.find(
+        const matchedInterest = interests?.find(
           c => c.name === meetingDetail.interestName
         );
         setSelectedInterestId(matchedInterest ? matchedInterest.id : null);
@@ -123,7 +129,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
         description: meetingIntro,
         interestId: selectedInterestId!,
         maxParticipants: maxParticipants[0],
-        meetingDate: combinedDateTime.toISOString(),
+        meetingDate: meetingDate.toISOString(),
         address: location,
         meetingImage,
       };
@@ -205,7 +211,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
               description="모임과 관련된 관심사를 선택해주세요 (최소 1개)"
             >
               <div className="flex flex-wrap gap-2">
-                {TOPIC_CATEGORIES.map((interest) => (
+                {interests?.map((interest) => (
                   <Badge
                     key={interest.id}
                     variant={selectedInterestId === interest.id ? "default" : "outline"}
@@ -250,22 +256,24 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
                 />
               </div>
             </FormField>
-          {/* 모임 날짜 및 시간 */}
-<!--           <FormField label="모임 날짜 및 시간" description="모임이 진행될 날짜와 시간을 선택해주세요">
-            <DateTimePicker
-              date={meetingDate}
-              hour={meetingHour}
-              minute={meetingMinute}
-              period={meetingPeriod}
-              onDateChange={setMeetingDate}
-              onHourChange={setMeetingHour}
-              onMinuteChange={setMeetingMinute}
-              onPeriodChange={setMeetingPeriod}
-            />
-          </FormField> -->
-
             {/* 모임 날짜 및 시간 */}
             <FormField label="모임 날짜 및 시간" description="모임이 진행될 날짜와 시간을 선택해주세요">
+              <DateTimePicker
+                date={meetingDate}
+                hour={meetingHour}
+                minute={meetingMinute}
+                period={meetingPeriod}
+                onDateChange={setMeetingDate}
+                onHourChange={setMeetingHour}
+                onMinuteChange={setMeetingMinute}
+                onPeriodChange={setMeetingPeriod}
+              />
+            </FormField>
+
+            {/* 영지 = 모임 날짜 및 시간을 둘 중 어느 걸 쓰는지 몰라 일단 둘다 남겨뒀습니다 */}
+
+            {/* 모임 날짜 및 시간 */}
+            {/* <FormField label="모임 날짜 및 시간" description="모임이 진행될 날짜와 시간을 선택해주세요">
               <div className="space-y-3">
                 <Popover>
                   <PopoverTrigger asChild>
@@ -292,10 +300,10 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
                       disabled={(date) => date < new Date()}
                     />
                   </PopoverContent>
-                </Popover>
-                {/* 시간 선택 기능 추가예정 */}
-              </div>
-            </FormField>
+                </Popover> */}
+            {/* 시간 선택 기능 추가예정 */}
+            {/* </div>
+            </FormField> */}
 
             {/* 모임 장소 (카카오 API로 리펙토링할 예정) */}
             <FormField label="모임 장소 (카카오 API로 리팩토링예정)" htmlFor="location">
