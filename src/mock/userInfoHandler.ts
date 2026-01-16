@@ -15,7 +15,7 @@ let mockUserInfo = {
     image: "https://picsum.photos/id/111/300/300"
 };
 
-export const getUserInfo = http.get(`${httpUrl}/users/me`, async ({ request }) => {
+const getUserInfo = http.get(`${httpUrl}/users/me`, async ({ request }) => {
     try {
         const authHeader = request.headers.get('Authorization');
         if (!authHeader) {
@@ -34,7 +34,7 @@ export const getUserInfo = http.get(`${httpUrl}/users/me`, async ({ request }) =
     }
 })
 
-export const userUpdate = http.put(`${httpUrl}/users/user-update`, async ({ request }) => {
+const userUpdate = http.put(`${httpUrl}/users/user-update`, async ({ request }) => {
     try {
         const authHeader = request.headers.get('Authorization');
         if (!authHeader) {
@@ -73,3 +73,8 @@ export const userUpdate = http.put(`${httpUrl}/users/user-update`, async ({ requ
         return new HttpResponse(null, { status: 500 });
     }
 });
+
+export const userInfoHandler = [
+    getUserInfo,
+    userUpdate
+];

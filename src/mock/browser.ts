@@ -1,36 +1,13 @@
 import { setupWorker } from "msw/browser";
-import {
-  login,
-  join,
-  checkEmail,
-  checkNickname,
-  findPassword,
-  verifyResetCode,
-  resetPassword,
-  googleLogin,
-  logout,
-  refresh,
-  verifyUser,
-} from "./authHandler";
+import { authHandler } from "./authHandler";
 import { meetingHandler } from "./meetingHandler";
 import { getInterests } from './interestHandler';
-import { getUserInfo, userUpdate } from './userInfoHandler';
+import { userInfoHandler } from './userInfoHandler';
 
 const handlers = [
-  login,
-  join,
-  checkEmail,
-  checkNickname,
-  findPassword,
-  verifyResetCode,
-  resetPassword,
-  googleLogin,
-  logout,
-  refresh,
-  verifyUser,
+  ...authHandler,
   getInterests,
-  getUserInfo,
-  userUpdate,
+  ...userInfoHandler,
   ...meetingHandler
 ];
 export const worker = setupWorker(...handlers);

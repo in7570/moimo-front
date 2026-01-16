@@ -3,7 +3,7 @@ import { httpUrl } from './mockData';
 
 
 // 일반 로그인 핸들러
-export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => {
+const login = http.post(`${httpUrl}/users/login`, async ({ request }) => {
     const { email, password } = (await request.json()) as any;
     await delay(1000);
 
@@ -47,7 +47,7 @@ export const login = http.post(`${httpUrl}/users/login`, async ({ request }) => 
 });
 
 // 구글 로그인
-export const googleLogin = http.post(`${httpUrl}/users/login/google`, async ({ request }) => {
+const googleLogin = http.post(`${httpUrl}/users/login/google`, async ({ request }) => {
     try {
         const { code, redirectUri } = (await request.json()) as any;
         console.log('google login request:', { code, redirectUri });
@@ -76,13 +76,13 @@ export const googleLogin = http.post(`${httpUrl}/users/login/google`, async ({ r
 });
 
 // 로그아웃 핸들러
-export const logout = http.post(`${httpUrl}/users/logout`, async () => {
+const logout = http.post(`${httpUrl}/users/logout`, async () => {
     await delay(1000);
     return HttpResponse.json({ message: "로그아웃이 완료되었습니다." });
 });
 
 // 회원가입 핸들러
-export const join = http.post(`${httpUrl}/users/register`, async ({ request }) => {
+const join = http.post(`${httpUrl}/users/register`, async ({ request }) => {
     const { email, password, nickname } = (await request.json()) as any;
     await delay(1000);
     return HttpResponse.json({
@@ -110,7 +110,7 @@ export const join = http.post(`${httpUrl}/users/register`, async ({ request }) =
 });
 
 // 이메일 중복 확인
-export const checkEmail = http.post(`${httpUrl}/users/check-email`, async ({ request }) => {
+const checkEmail = http.post(`${httpUrl}/users/check-email`, async ({ request }) => {
     const { email } = (await request.json()) as any;
     await delay(500);
 
@@ -127,7 +127,7 @@ export const checkEmail = http.post(`${httpUrl}/users/check-email`, async ({ req
 });
 
 // 닉네임 중복 확인
-export const checkNickname = http.post(`${httpUrl}/users/check-nickname`, async ({ request }) => {
+const checkNickname = http.post(`${httpUrl}/users/check-nickname`, async ({ request }) => {
     const { nickname } = (await request.json()) as any;
     await delay(500);
 
@@ -149,7 +149,7 @@ const resetCodeStore = new Map<string, { email: string; expiresAt: Date }>();
 const resetTokenStore = new Map<string, { email: string; resetCode: string; expiresAt: Date }>();
 
 // 비밀번호 찾기
-export const findPassword = http.post(`${httpUrl}/users/password-reset/request`, async ({ request }) => {
+const findPassword = http.post(`${httpUrl}/users/password-reset/request`, async ({ request }) => {
     const { email } = (await request.json()) as any;
     await delay(1000);
 
@@ -173,7 +173,7 @@ export const findPassword = http.post(`${httpUrl}/users/password-reset/request`,
 });
 
 // 비밀번호 인증코드 확인
-export const verifyResetCode = http.post(`${httpUrl}/users/password-reset/verify`, async ({ request }) => {
+const verifyResetCode = http.post(`${httpUrl}/users/password-reset/verify`, async ({ request }) => {
     const { email, code } = (await request.json()) as any;
     await delay(1000);
 
@@ -218,7 +218,7 @@ export const verifyResetCode = http.post(`${httpUrl}/users/password-reset/verify
 });
 
 // 비밀번호 재설정
-export const resetPassword = http.put(`${httpUrl}/users/password-reset/confirm`, async ({ request }) => {
+const resetPassword = http.put(`${httpUrl}/users/password-reset/confirm`, async ({ request }) => {
     const { resetToken, resetCode, newPassword } = (await request.json()) as any;
     await delay(1000);
 
@@ -262,7 +262,7 @@ export const resetPassword = http.put(`${httpUrl}/users/password-reset/confirm`,
 });
 
 // 토큰 갱신 핸들러
-export const refresh = http.post(`${httpUrl}/users/refresh`, async ({ request }) => {
+const refresh = http.post(`${httpUrl}/users/refresh`, async ({ request }) => {
     const cookies = request.headers.get('cookie');
     await delay(500);
 
@@ -284,7 +284,7 @@ export const refresh = http.post(`${httpUrl}/users/refresh`, async ({ request })
 });
 
 // 사용자 인증 핸들러
-export const verifyUser = http.get(`${httpUrl}/users/verify`, async ({ request }) => {
+const verifyUser = http.get(`${httpUrl}/users/verify`, async ({ request }) => {
     const token = request.headers.get('Authorization');
     const cookies = request.headers.get('cookie');
     await delay(1000);
@@ -320,3 +320,17 @@ export const verifyUser = http.get(`${httpUrl}/users/verify`, async ({ request }
         { status: 200 }
     );
 });
+
+export const authHandler = [
+    login,
+    join,
+    checkEmail,
+    checkNickname,
+    findPassword,
+    verifyResetCode,
+    resetPassword,
+    googleLogin,
+    logout,
+    refresh,
+    verifyUser,
+];
