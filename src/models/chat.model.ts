@@ -1,4 +1,8 @@
-import type { User } from "./user.model";
+// 메세지 전송자 정보
+export interface MessageSender {
+  id: number;
+  nickname: string;
+}
 
 // 채팅 메세지 타입
 export interface ChatMessage {
@@ -7,15 +11,25 @@ export interface ChatMessage {
   senderId: number;
   meetingId: number;
   createdAt: string;
-
-  sender?: Pick<User, "id" | "email" | "nickname" | "profile_image">;
+  sender: MessageSender;
 }
 
-// 채팅방 타입
+// 메세지 목록 조회 API 응답
+export interface ChatMessageResponse {
+  meetingId: number;
+  messages: ChatMessage[];
+}
+
+// 채팅방 목록 조회 API 응답
 export interface ChatRoom {
-  id: number;
+  meetingId: number;
   title: string;
-  image?: string;
-  lastMessage?: string;
-  lastMessageTime?: string;
+  image: string | null;
+  memberCount: number;
+  isLeader: boolean;
+  lastMessage?: {
+    sender: string;
+    content: string;
+    createdAt: string;
+  };
 }
