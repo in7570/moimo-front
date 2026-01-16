@@ -7,10 +7,24 @@ import { useState } from 'react';
 import { guidelines, faqs } from "@/constants/moimerIntroData"
 import moimer from "@/assets/images/moimer.png"
 import moimerIntro from "@/assets/images/moimer-intro.png"
+import { useAuthStore } from "@/store/authStore";
+import LoginRequiredDialog from "@/components/common/LoginRequiredDialog";
 
 function MoimerIntro() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 로그인 상태 및 모달 관리
+  const { isLoggedIn } = useAuthStore();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  const handleApplyClick = () => {
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-card pb-32">
@@ -50,11 +64,18 @@ function MoimerIntro() {
           ))}
         </div>
       </section>
-      <FixedBottomButton onClick={() => setIsModalOpen(true)}>모이머 신청하기</FixedBottomButton>
+      <FixedBottomButton onClick={handleApplyClick}>
+        {isLoggedIn ? "모이머 신청하기" : "로그인하고 모이머 신청하기"}
+      </FixedBottomButton>
 
       <MoimerApplicationModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
+      />
+
+      <LoginRequiredDialog
+        open={showLoginPrompt}
+        onOpenChange={setShowLoginPrompt}
       />
     </div>
   );

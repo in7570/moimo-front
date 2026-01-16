@@ -8,6 +8,8 @@ import { useState, useEffect, useRef } from "react";
 import { getMeetingById } from "@/api/meeting.api";
 import type { MeetingDetail } from "@/models/meeting.model";
 import moimoMeeting from "@/assets/images/moimo-meetings.png";
+import { useAuthStore } from "@/store/authStore";
+import LoginRequiredDialog from "@/components/common/LoginRequiredDialog";
 
 function MeetingDetailPage() {
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -17,6 +19,10 @@ function MeetingDetailPage() {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showExpandButton, setShowExpandButton] = useState(false);
   const descriptionRef = useRef<HTMLDivElement>(null);
+
+  // 로그인 상태 및 모달 관리
+  const { isLoggedIn } = useAuthStore();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
     const fetchMeetingDetail = async () => {
@@ -54,8 +60,14 @@ function MeetingDetailPage() {
   }, [meetingDetail]);
 
   const handleJoinMeeting = () => {
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
+
+    // TODO: 로그인 상태면 신청 모달 표시
     console.log("Join meeting:", meetingId);
-    // 신청 로직 구현
+    alert("신청 기능은 곧 추가될 예정입니다!");
   };
 
   console.log("🎯 렌더링 상태:", { isLoading, error, meetingDetail: !!meetingDetail });
@@ -151,7 +163,7 @@ function MeetingDetailPage() {
                 onClick={handleJoinMeeting}
                 className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm font-medium"
               >
-                신청하기
+                {isLoggedIn ? "신청하기" : "로그인하고 신청하기"}
               </button>
             </div>
           </div>
@@ -249,8 +261,13 @@ function MeetingDetailPage() {
         </Card>
       </div>
       <FixedBottomButton onClick={handleJoinMeeting}>
-        이 모임 신청하기
+        {isLoggedIn ? "이 모임 신청하기" : "로그인하고 신청하기"}
       </FixedBottomButton>
+
+      <LoginRequiredDialog
+        open={showLoginPrompt}
+        onOpenChange={setShowLoginPrompt}
+      />
     </div>
   );
 }
