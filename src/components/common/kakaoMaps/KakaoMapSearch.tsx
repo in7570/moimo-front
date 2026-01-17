@@ -99,7 +99,7 @@ function KakaoMapSearch({ onPlaceSelect, defaultValue = "", className }: KakaoMa
           <Input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="도로명 주소를 검색해주세요 (예: 서울시 강남구 테헤란로)"
             className="h-12 pr-10"
             disabled={isSearching}

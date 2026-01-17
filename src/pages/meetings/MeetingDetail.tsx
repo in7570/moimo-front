@@ -69,7 +69,7 @@ function MeetingDetailPage() {
 
     // TODO: 로그인 상태면 신청 모달 표시
     console.log("Join meeting:", meetingId);
-    toast.info("신청 기능은 곳 추가될 예정입니다!");
+    toast.info("신청 기능은 곧 추가될 예정입니다!");
   };
 
   console.log("🎯 렌더링 상태:", { isLoading, error, meetingDetail: !!meetingDetail });
