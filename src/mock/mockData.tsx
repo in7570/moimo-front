@@ -2,8 +2,6 @@ import { fakerKO as faker } from "@faker-js/faker";
 import type { MyMeetingsResponse } from "@/api/me.api";
 import type { Interest } from "@/models/interest.model";
 import type { Meeting } from "@/models/meeting.model";
-import type { ChatMessage, ChatRoom } from "@/models/chat.model";
-import type { User } from "@/models/user.model";
 import type {
   Participant,
   ParticipationStatus,

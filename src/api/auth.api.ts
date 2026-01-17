@@ -115,7 +115,7 @@ export const findPassword = async (data: FindPasswordFormValues) => {
   try {
     const response = await apiClient.post(
       "/users/password-reset/request",
-      data
+      data,
     );
     return response.data;
   } catch (error) {

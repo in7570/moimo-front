@@ -1,5 +1,5 @@
 import type { ChatMessage } from "@/models/chat.model";
-import { mockChatMessages, mockChatRooms } from "./mockData";
+import { mockChatMessages, mockChatRooms } from "./chatMock";
 
 // Custom minimal EventEmitter to avoid Node.js 'events' module dependency in browser
 class CustomEventEmitter {
@@ -24,7 +24,7 @@ class CustomEventEmitter {
   off(eventName: string, listener: Function): this {
     if (this.events[eventName]) {
       this.events[eventName] = this.events[eventName].filter(
-        (l) => l !== listener
+        (l) => l !== listener,
       );
     }
     return this;

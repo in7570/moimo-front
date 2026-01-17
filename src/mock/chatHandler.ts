@@ -1,6 +1,7 @@
 // src/mock/chatHandler.ts
 import { http, HttpResponse, delay } from "msw";
-import { httpUrl, mockChatMessages, mockChatRooms } from "./mockData";
+import { httpUrl } from "./mockData";
+import { mockChatMessages, mockChatRooms } from "./chatMock";
 import type { ChatMessageResponse } from "@/models/chat.model";
 
 // 메시지 목록 조회 Mock

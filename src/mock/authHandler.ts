@@ -38,7 +38,7 @@ const login = http.post(`${httpUrl}/users/login`, async ({ request }) => {
             "refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict",
           // 'Set-Cookie': 'refreshToken=mock-refresh-token; HttpOnly; SameSite=Lax'
         },
-      }
+      },
     );
   }
 
@@ -59,13 +59,13 @@ const login = http.post(`${httpUrl}/users/login`, async ({ request }) => {
           "Set-Cookie":
             "refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict",
         },
-      }
+      },
     );
   }
 
   return new HttpResponse(
     JSON.stringify({ message: "이메일 또는 비밀번호가 일치하지 않습니다." }),
-    { status: 401 }
+    { status: 401 },
   );
 });
 
@@ -94,7 +94,7 @@ const googleLogin = http.post(
             "Set-Cookie":
               "refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict",
           },
-        }
+        },
       );
     } catch (error) {
       console.error("MSW googleLogin error:", error);
@@ -105,10 +105,10 @@ const googleLogin = http.post(
             message: error instanceof Error ? error.message : "Unknown error",
           },
         }),
-        { status: 500 }
+        { status: 500 },
       );
     }
-  }
+  },
 );
 
 // 로그아웃 핸들러
@@ -143,7 +143,7 @@ const join = http.post(`${httpUrl}/users/register`, async ({ request }) => {
         "Set-Cookie":
           "refreshToken=mock-refresh-token; HttpOnly; Secure; SameSite=Strict",
       },
-    }
+    },
   );
 });
 
@@ -157,15 +157,15 @@ const checkEmail = http.post(
     if (email === "taken@email.com") {
       return new HttpResponse(
         JSON.stringify({ message: "이미 사용 중인 이메일입니다." }),
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return HttpResponse.json(
       { message: "사용 가능한 이메일입니다." },
-      { status: 200 }
+      { status: 200 },
     );
-  }
+  },
 );
 
 // 닉네임 중복 확인
@@ -178,14 +178,14 @@ const checkNickname = http.post(
     if (nickname === "nickname123") {
       return new HttpResponse(
         JSON.stringify({ message: "이미 사용 중인 닉네임입니다." }),
-        { status: 409 }
+        { status: 409 },
       );
     }
     return HttpResponse.json(
       { message: "사용 가능한 닉네임입니다." },
-      { status: 200 }
+      { status: 200 },
     );
-  }
+  },
 );
 
 // 비밀번호 재설정 코드 저장소 (메모리 DB 역할)
@@ -212,19 +212,19 @@ const findPassword = http.post(
       // 저장소에 저장
       resetCodeStore.set(resetCode, { email, expiresAt });
       console.log(
-        `[Mock] Reset Code Generated for ${email}: ${resetCode}, Expires at: ${expiresAt.toLocaleTimeString()} `
+        `[Mock] Reset Code Generated for ${email}: ${resetCode}, Expires at: ${expiresAt.toLocaleTimeString()} `,
       );
 
       return HttpResponse.json(
         { message: "비밀번호 재설정 이메일이 발송되었습니다.", resetCode },
-        { status: 200 }
+        { status: 200 },
       );
     }
     return HttpResponse.json(
       { message: "이메일이 일치하지 않습니다." },
-      { status: 404 }
+      { status: 404 },
     );
-  }
+  },
 );
 
 // 비밀번호 인증코드 확인
@@ -240,7 +240,7 @@ const verifyResetCode = http.post(
     if (!storedData) {
       return new HttpResponse(
         JSON.stringify({ message: "유효하지 않은 인증코드입니다." }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -248,7 +248,7 @@ const verifyResetCode = http.post(
     if (storedData.email !== email) {
       return new HttpResponse(
         JSON.stringify({ message: "이메일이 일치하지 않습니다." }),
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -257,7 +257,7 @@ const verifyResetCode = http.post(
       resetCodeStore.delete(code);
       return new HttpResponse(
         JSON.stringify({ message: "인증코드가 만료되었습니다." }),
-        { status: 410 }
+        { status: 410 },
       );
     }
 
@@ -274,16 +274,16 @@ const verifyResetCode = http.post(
       expiresAt: tokenExpiresAt,
     });
     console.log(
-      `[Mock] Reset Token Generated for ${email}: ${resetToken}, Expires at: ${tokenExpiresAt.toLocaleTimeString()}`
+      `[Mock] Reset Token Generated for ${email}: ${resetToken}, Expires at: ${tokenExpiresAt.toLocaleTimeString()}`,
     );
 
     return HttpResponse.json(
       {
         resetToken,
       },
-      { status: 200 }
+      { status: 200 },
     );
-  }
+  },
 );
 
 // 비밀번호 재설정
@@ -300,7 +300,7 @@ const resetPassword = http.put(
     if (!tokenData) {
       return new HttpResponse(
         JSON.stringify({ message: "유효하지 않은 토큰입니다." }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -308,7 +308,7 @@ const resetPassword = http.put(
     if (tokenData.resetCode !== resetCode) {
       return new HttpResponse(
         JSON.stringify({ message: "유효하지 않은 인증코드입니다." }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -317,13 +317,13 @@ const resetPassword = http.put(
       resetTokenStore.delete(resetToken);
       return new HttpResponse(
         JSON.stringify({ message: "토큰이 만료되었습니다." }),
-        { status: 410 }
+        { status: 410 },
       );
     }
 
     // 비밀번호 변경 성공 (Mock에서는 로그만 출력)
     console.log(
-      `[Mock] Password reset successful for ${tokenData.email}, New Password: ${newPassword}`
+      `[Mock] Password reset successful for ${tokenData.email}, New Password: ${newPassword}`,
     );
 
     // 사용 완료된 토큰 및 코드 삭제
@@ -332,9 +332,9 @@ const resetPassword = http.put(
 
     return HttpResponse.json(
       { message: "비밀번호가 성공적으로 변경되었습니다." },
-      { status: 200 }
+      { status: 200 },
     );
-  }
+  },
 );
 
 // 토큰 갱신 핸들러
@@ -352,13 +352,13 @@ const refresh = http.post(`${httpUrl}/users/refresh`, async ({ request }) => {
         headers: {
           Authorization: "Bearer new-mock-jwt-token",
         },
-      }
+      },
     );
   }
 
   return new HttpResponse(
     JSON.stringify({ message: "유효하지 않은 리프레시 토큰입니다." }),
-    { status: 401 }
+    { status: 401 },
   );
 });
 
@@ -372,7 +372,7 @@ const verifyUser = http.get(`${httpUrl}/users/verify`, async ({ request }) => {
   if (!token && (!cookies || !cookies.includes("refreshToken="))) {
     return new HttpResponse(
       JSON.stringify({ message: "인증 토큰이 없습니다." }),
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -394,7 +394,7 @@ const verifyUser = http.get(`${httpUrl}/users/verify`, async ({ request }) => {
       headers: {
         Authorization: "Bearer mock-jwt-token",
       },
-    }
+    },
   );
 });
 
@@ -463,7 +463,7 @@ const userUpdate = http.put(
       console.error("userUpdate handler error:", error);
       return new HttpResponse(null, { status: 500 });
     }
-  }
+  },
 );
 
 export const authHandler = [
