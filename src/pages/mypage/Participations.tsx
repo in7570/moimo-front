@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Participant } from "@/models/participation.model";
 import ParticipantCard from "@/components/features/mypage/ParticipantCard";
 import { useParticipationQuery } from "@/hooks/useParticipationQuery";
 import { useUpdateParticipation } from "@/hooks/useParticipateMutations";

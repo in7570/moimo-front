@@ -11,7 +11,7 @@ import { useMeetingQuery } from "@/hooks/useMeetingQuery";
 import DateTimePicker from "@components/common/DateTimePicker";
 import { Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Meeting, CreateMeetingRequest } from "@/models/meeting.model";
+import type { Meeting } from "@/models/meeting.model";
 import type { MyMeetingsResponse } from "@/api/me.api";
 import LoadingSpinner from "@components/common/LoadingSpinner";
 import { useInterestQuery } from "@/hooks/useInterestQuery";
@@ -97,7 +97,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
         reset({
           title: meetingDetail.title,
           description: meetingDetail.description || "",
-          interestId: interests?.find(c => c.name === meetingDetail.interestName)?.id,
+          interestId: meetingDetail.interestId,
           maxParticipants: meetingDetail.maxParticipants,
           meetingDate: meetingDetail.meetingDate ? new Date(meetingDetail.meetingDate) : undefined,
           meetingHour: "12",

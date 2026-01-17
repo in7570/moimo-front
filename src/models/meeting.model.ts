@@ -1,28 +1,29 @@
 // 위치 정보
 export interface Location {
-    address: string;
-    lat: number;
-    lng: number;
+  address: string;
+  lat: number;
+  lng: number;
 }
 
 // 호스트 정보
 export interface Host {
-    nickname: string;
-    bio: string;
+  nickname: string;
+  bio: string;
 }
 
 // 참가자 정보
 export interface Participant {
-    id: number;
-    name: string;
-    profileImageUrl?: string;
-    isHost?: boolean;
+  id: number;
+  name: string;
+  profileImageUrl?: string;
+  isHost?: boolean;
 }
 
 // 모임 목록용 (간단한 정보)
 export interface Meeting {
   meetingId: number;
   title: string;
+  interestId: number;
   interestName: string;
   maxParticipants: number;
   currentParticipants: number;
@@ -35,6 +36,7 @@ export interface MeetingDetail {
   id: number;
   title: string;
   description: string;
+  interestId: number;
   interestName: string;
   maxParticipants: number;
   currentParticipants: number;

@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createMeeting, updateMeeting } from "@/api/meeting.api";
-import type { CreateMeetingRequest } from "@/models/meeting.model";
 
 // 모임 생성 훅
 export const useCreateMeetingMutation = () => {

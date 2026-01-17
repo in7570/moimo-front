@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "@/hooks/useAuthMutations";
 
 export const ProfileDropdown = () => {
-  const { nickname, storeLogout } = useAuthStore();
+  const { nickname } = useAuthStore();
   const logoutMutation = useLogoutMutation();
   const navigate = useNavigate();
   const userAvatarUrl = "";

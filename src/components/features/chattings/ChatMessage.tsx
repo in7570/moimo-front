@@ -22,7 +22,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isMine }) => {
       {!isMine && (
         <Avatar className="w-10 h-10">
           <AvatarImage
-            src={sender.image ? sender.image : "https://github.com/shadcn.png"}
+            src={sender.profile_image ? sender.profile_image : "https://github.com/shadcn.png"}
             alt={sender.nickname}
           />
           <AvatarFallback>

@@ -2,14 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { useFindPasswordMutation } from "@/hooks/useAuthMutations";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { NextMonthButton } from "react-day-picker";
 import { AxiosError } from "axios";
 
 // zod schema 정의

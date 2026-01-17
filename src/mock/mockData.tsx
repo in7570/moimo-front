@@ -106,15 +106,19 @@ export const interestCategories: Interest[] = [
   },
 ];
 
-export const mockMeetings: Meeting[] = Array.from({ length: 25 }, (_, i) => ({
-  meetingId: i + 1,
-  title: `모임 제목 ${i + 1}`,
-  interestName: i % 2 === 0 ? "자기계발/공부" : "스포츠/운동",
-  maxParticipants: 10,
-  currentParticipants: i % 10,
-  address: `서울시 강남구 역삼동 ${i + 1}번지`,
-  meetingDate: `2024-03-${String((i % 28) + 1).padStart(2, '0')}T1${i % 9}:00:00`,
-}));
+export const mockMeetings: Meeting[] = Array.from({ length: 25 }, (_, i) => {
+  const interest = interestCategories[i % interestCategories.length];
+  return {
+    meetingId: i + 1,
+    title: `모임 제목 ${i + 1}`,
+    interestId: interest.id,
+    interestName: interest.name,
+    maxParticipants: 10,
+    currentParticipants: i % 10,
+    address: `서울시 강남구 역삼동 ${i + 1}번지`,
+    meetingDate: `2024-03-${String((i % 28) + 1).padStart(2, '0')}T1${i % 9}:00:00`,
+  };
+});
 
 // 내 참여모임
 export const myMeetings: MyMeetingsResponse[] = Array.from({ length: 60 }, (_, i) => {
@@ -126,6 +130,7 @@ export const myMeetings: MyMeetingsResponse[] = Array.from({ length: 60 }, (_, i
   return {
     meetingId: 101 + i,
     title: faker.company.catchPhrase(),
+    interestId: interest.id,
     interestName: interest.name,
     address: `${faker.location.city()} ${faker.location.street()}`,
     meetingDate: faker.date.future().toISOString(),

@@ -2,7 +2,6 @@ import { apiClient } from "@/api/client";
 import type {
   MeetingListResponse,
   MeetingDetail,
-  CreateMeetingRequest,
   CreateMeetingResponse
 } from "@/models/meeting.model";
 

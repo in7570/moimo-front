@@ -61,7 +61,7 @@ const Chatting = () => {
                 id: 101,
                 email: "opponent1@example.com",
                 nickname: "상대방1",
-                image: "https://github.com/shadcn.png",
+                profile_image: "https://github.com/shadcn.png",
               },
             }}
             isMine={false}
@@ -77,7 +77,7 @@ const Chatting = () => {
                 id: 102,
                 email: "opponent2@example.com",
                 nickname: "상대방2",
-                image: "https://github.com/shadcn.png",
+                profile_image: "https://github.com/shadcn.png",
               },
             }}
             isMine={false}
@@ -93,7 +93,7 @@ const Chatting = () => {
                 id: 103,
                 email: "me@example.com",
                 nickname: "나",
-                image: "https://github.com/shadcn.png",
+                profile_image: "https://github.com/shadcn.png",
               },
             }}
             isMine={true}

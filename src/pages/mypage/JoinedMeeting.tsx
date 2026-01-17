@@ -1,8 +1,6 @@
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-} from "@/components/ui/card";
+
 import {
     Pagination,
     PaginationContent,
@@ -19,7 +17,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useMeQuery } from "@/hooks/useMeQuery";
-import { Calendar, MapPin, Users } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import SmallMeetingCard from "@/components/features/mypage/SmallMeetingCard";

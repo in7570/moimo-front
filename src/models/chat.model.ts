@@ -1,4 +1,10 @@
-import type { User } from "./user.model";
+
+export interface ChatSender {
+  id: number;
+  email: string;
+  nickname: string | undefined;
+  profile_image: string | undefined;
+}
 
 export interface ChatMessage {
   id: number;
@@ -7,5 +13,5 @@ export interface ChatMessage {
   meetingId: number;
   createdAt: string;
 
-  sender: Pick<User, "id" | "email" | "nickname" | "image">;
+  sender: ChatSender;
 }
