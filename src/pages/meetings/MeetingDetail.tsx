@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -28,9 +28,11 @@ function MeetingDetailPage() {
 
   // 로그인 상태 및 모달 관리
   const { isLoggedIn, nickname } = useAuthStore();
+  const navigate = useNavigate();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showJoinConfirm, setShowJoinConfirm] = useState(false);
+  const [isPending, setIsPending] = useState(false);
 
   // 내 모임인지 확인
   const isHost = meetingDetail?.host.nickname === nickname;
@@ -83,6 +85,7 @@ function MeetingDetailPage() {
   const handleConfirmJoin = () => {
     // TODO: 모임 신청 API 호출
     console.log("Join meeting:", meetingId);
+    setIsPending(true);
     toast.success("모임 신청이 완료되었습니다. 모이머의 승인을 기다려주세요!");
     setShowJoinConfirm(false);
   };
@@ -190,12 +193,22 @@ function MeetingDetailPage() {
               </div>
 
 
-              <button
-                onClick={handleJoinMeeting}
-                className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm font-medium"
-              >
-                {isLoggedIn ? "신청하기" : "로그인하고 신청하기"}
-              </button>
+              {isHost ? (
+                <Button
+                  onClick={() => navigate(`/mypage/meetings/hosting/${meetingId}/participations`)}
+                  className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm font-medium"
+                >
+                  승인 요청 목록 보기
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleJoinMeeting}
+                  disabled={isPending}
+                  className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm font-medium disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+                >
+                  {isPending ? "승인 요청 중" : isLoggedIn ? "신청하기" : "로그인하고 신청하기"}
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -292,9 +305,25 @@ function MeetingDetailPage() {
           </CardContent>
         </Card>
       </div>
-      <FixedBottomButton onClick={handleJoinMeeting}>
-        {isLoggedIn ? "이 모임 신청하기" : "로그인하고 신청하기"}
-      </FixedBottomButton>
+      {isHost ? (
+        <FixedBottomButton
+          onClick={() => navigate(`/mypage/meetings/hosting/${meetingId}/participations`)}
+        >
+          승인 요청 목록 보기
+        </FixedBottomButton>
+      ) : (
+        <FixedBottomButton
+          onClick={handleJoinMeeting}
+          disabled={isPending}
+        >
+          {isPending
+            ? "승인 요청 중"
+            : isLoggedIn
+              ? "이 모임 신청하기"
+              : "로그인하고 신청하기"
+          }
+        </FixedBottomButton>
+      )}
 
 
       <LoginRequiredDialog
@@ -316,7 +345,7 @@ function MeetingDetailPage() {
         open={showJoinConfirm}
         onOpenChange={setShowJoinConfirm}
         title="모임 신청"
-        description="이 모임에 참여 신청하시겠습니까?\n\n⚠️ 신청 후 취소가 불가능합니다.\n모이머(호스트)가 승인하면 알림으로 안내해드립니다."
+        description={`해당 모임을 신청하시겠습니까?\n 신청 후 취소가 불가능합니다.`}
         confirmText="신청하기"
         cancelText="취소"
         onConfirm={handleConfirmJoin}
