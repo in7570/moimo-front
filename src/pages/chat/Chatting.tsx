@@ -11,11 +11,13 @@ import { IoIosSend } from "react-icons/io";
 import { getChatRooms, getMessages } from "@/api/chat.api";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import type { ChatRoom } from "@/models/chat.model";
+import { useLocation } from "react-router-dom";
 
 const Chatting = () => {
   const { nickname, userId } = useAuthStore();
   const [selectedMeeting, setSelectedMeeting] = useState<ChatRoom | null>(null);
   const [inputValue, setInputValue] = useState("");
+  const location = useLocation();
 
   // 스크롤 제어를 위한 Ref
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -49,6 +51,17 @@ const Chatting = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (isSuccess && chatRooms && location.state?.meetingId) {
+      const roomToSelect = chatRooms.find(
+        (room) => room.meetingId === location.state.meetingId,
+      );
+      if (roomToSelect) {
+        setSelectedMeeting(roomToSelect);
+      }
+    }
+  }, [isSuccess, chatRooms, location.state]);
 
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
@@ -110,7 +123,7 @@ const Chatting = () => {
           <>
             <div className="p-4 border-b shrink-0 flex items-center gap-3">
               <FaArrowLeft
-                className="cursor-pointer text-xl lg:hidden"
+                className="cursor-pointer text-xl"
                 onClick={() => setSelectedMeeting(null)}
               />
               <div>
