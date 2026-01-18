@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import MeetingList from "@/components/common/MeetingList";
+import MeetingList from "@/components/features/home/MeetingList";
 import PaginationComponent from "@/components/common/PaginationComponent";
 import { useMeetingsQuery } from "@/hooks/useMeetingsQuery";
 import { usePagination } from "@/hooks/usePagination";

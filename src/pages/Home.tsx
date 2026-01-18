@@ -1,6 +1,6 @@
-import NewMeetingList from "@/components/features/meetings/NewMeetingList";
-import JoinedMeetingsList from "@features/meetings/JoinedMeetingsList";
-import PendingMeetingsList from "@features/meetings/PendingMeetingsList";
+import NewMeetingList from "@/components/features/home/NewMeetingList";
+import JoinedMeetingsList from "@/components/features/home/JoinedMeetingsList";
+import PendingMeetingsList from "@/components/features/home/PendingMeetingsList";
 import SearchSection from "@features/search/SearchSection";
 import TopicSection from "@features/topics/TopicSection";
 import { useAuthStore } from "@store/authStore";

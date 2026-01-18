@@ -2,8 +2,8 @@ import { useMeetingsQuery } from "@/hooks/useMeetingsQuery";
 import type { GetMeetingsParams } from "@/api/meeting.api";
 import { useAuthStore } from "@/store/authStore";
 import { Link } from "react-router-dom";
-import MeetingList from "@/components/common/MeetingList";
-import { Skeleton } from "../ui/skeleton";
+import MeetingList from "@/components/features/home/MeetingList";
+import { Skeleton } from "../../ui/skeleton";
 
 interface MeetingListSectionProps {
   title: string;
@@ -30,7 +30,7 @@ function MeetingListSection({
   return (
     <div className="w-full max-w-6xl mx-auto py-8">
       <div className="flex justify-between w-full mb-4">
-        <div className="text-xl font-bold">{finalTitle}</div>
+        <div className="text-xl font-bold ">{finalTitle}</div>
         {seeMoreHref && (
           <Link to={seeMoreHref} className="text-sm cursor-pointer">
             전체보기
