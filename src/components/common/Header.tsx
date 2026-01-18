@@ -3,6 +3,8 @@ import { useAuthStore } from "@/store/authStore";
 import { NotificationDropdown } from "@/components/common/NotificationDropdown";
 import { ProfileDropdown } from "@/components/common/ProfileDropdown";
 import { Link } from "react-router-dom";
+import { IoIosChatbubbles } from "react-icons/io";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 function Header() {
   const { isLoggedIn } = useAuthStore();
@@ -13,7 +15,7 @@ function Header() {
           asChild
           size="lg"
           variant="ghost"
-          className="cursor-pointer hover:bg-transparent font-bold text-2xl p-0"
+          className="cursor-pointer hover:bg-medium font-bold text-2xl p-0"
         >
           <Link to="/">MoiMo</Link>
         </Button>
@@ -22,7 +24,7 @@ function Header() {
             asChild
             size="default"
             variant="ghost"
-            className="cursor-pointer hover:bg-transparent text-base"
+            className="cursor-pointer hover:bg-medium text-base"
           >
             <Link to="/moimer-intro">모이머란?</Link>
           </Button>
@@ -30,13 +32,22 @@ function Header() {
             asChild
             size="default"
             variant="ghost"
-            className="cursor-pointer hover:bg-transparent text-base"
+            className="cursor-pointer hover:bg-medium text-base"
           >
             <Link to="/meetings">원하는 모임 찾기</Link>
           </Button>
         </div>
         {isLoggedIn ? (
-          <div className="ml-auto flex items-center gap-4 md:gap-8">
+          <div className="ml-auto flex items-center gap-3 md:gap-4">
+            <Link to="/chats">
+              <button className="focus:outline-none focus:ring-offset-2 rounded-full">
+                <Avatar className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors border-none bg-medium">
+                  <AvatarFallback className="bg-medium">
+                    <IoIosChatbubbles className="w-7 h-7 text-foreground/80" />
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            </Link>
             <NotificationDropdown />
             <ProfileDropdown />
           </div>
@@ -46,7 +57,7 @@ function Header() {
               asChild
               size="default"
               variant="ghost"
-              className="cursor-pointer hover:bg-transparent text-base"
+              className="cursor-pointer hover:bg-medium text-base"
             >
               <Link to="/login">로그인</Link>
             </Button>
