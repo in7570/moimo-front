@@ -169,7 +169,7 @@ export const refresh = async (): Promise<string | undefined> => {
   }
 };
 
-interface VerifyUserResponse {
+export interface VerifyUserResponse {
   authenticated: boolean;
   isNewUser: boolean;
   id: number;

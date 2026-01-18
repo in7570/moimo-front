@@ -12,14 +12,7 @@ import { getChatRooms } from "@/api/chat.api";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import type { ChatMessage, ChatRoom } from "@/models/chat.model";
 import { useLocation } from "react-router-dom";
-import type { User } from "@/models/user.model";
-
-// TODO: API 응답 타입 정의 파일로 분리
-interface VerifyUserResponse extends User {
-  authenticated: boolean;
-  isNewUser: boolean;
-  accessToken: string;
-}
+import type { VerifyUserResponse } from "@/api/auth.api";
 
 const Chatting = () => {
   const { nickname, userId } = useAuthStore();
