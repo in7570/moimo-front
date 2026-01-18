@@ -1,11 +1,8 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import FixedBottomButton from "@/components/common/FixedBottomButton";
 import { IoLocationOutline } from "react-icons/io5";
-import { Edit } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { getMeetingById } from "@/api/meeting.api";
 import type { MeetingDetail } from "@/models/meeting.model";
@@ -16,6 +13,10 @@ import KakaoMapView from "@/components/common/kakaoMaps/KakaoMapView";
 import { toast } from "sonner";
 import CreateMeetingModal from "@/components/features/meetings/CreateMeetingModal";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
+import { useJoinMeetingMutation } from "@/hooks/useMeetingMutations";
+import { useMeQuery } from "@/hooks/useMeQuery";
+import MeetingActionButtons from "@/components/features/meetings/MeetingActionButtons";
+import { formatMeetingDate } from "@/utils/dateFormat";
 
 function MeetingDetailPage() {
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -28,14 +29,29 @@ function MeetingDetailPage() {
 
   // 로그인 상태 및 모달 관리
   const { isLoggedIn, nickname } = useAuthStore();
-  const navigate = useNavigate();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showJoinConfirm, setShowJoinConfirm] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
+  // 모임 신청 mutation
+  const joinMeetingMutation = useJoinMeetingMutation();
+
+  // 내가 신청한 모임 목록 조회
+  const { meetings: pendingMeetings } = useMeQuery("joined", "pending", 1, 50);
+
   // 내 모임인지 확인
   const isHost = meetingDetail?.host.nickname === nickname;
+
+  // 내가 이미 신청한 모임인지 확인
+  useEffect(() => {
+    if (meetingId && pendingMeetings) {
+      const isAlreadyApplied = pendingMeetings.some(
+        (meeting) => meeting.meetingId === Number(meetingId)
+      );
+      setIsPending(isAlreadyApplied);
+    }
+  }, [meetingId, pendingMeetings]);
 
   useEffect(() => {
     const fetchMeetingDetail = async () => {
@@ -43,13 +59,9 @@ function MeetingDetailPage() {
         console.log("meetingId가 없습니다");
         return;
       }
-
-      console.log("모임 조회 시작:", meetingId);
-
       try {
         setIsLoading(true);
         const response = await getMeetingById(meetingId);
-        console.log("API 응답:", response);
         setMeetingDetail(response); // response 자체가 MeetingDetail
         setError(null);
       } catch (err: any) {
@@ -82,15 +94,31 @@ function MeetingDetailPage() {
     setShowJoinConfirm(true);
   };
 
-  const handleConfirmJoin = () => {
-    // TODO: 모임 신청 API 호출
-    console.log("Join meeting:", meetingId);
-    setIsPending(true);
-    toast.success("모임 신청이 완료되었습니다. 모이머의 승인을 기다려주세요!");
-    setShowJoinConfirm(false);
+  const handleConfirmJoin = async () => {
+    if (!meetingId) return;
+    try {
+      await joinMeetingMutation.mutateAsync(Number(meetingId));
+      setIsPending(true);
+      toast.success("모임 신청이 완료되었습니다. 모이머의 승인을 기다려주세요!");
+      setShowJoinConfirm(false);
+    } catch (error: any) {
+      console.error("모임 신청 에러:", error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error;
+
+      if (error.response?.status === 400) {
+        toast.error(errorMessage || "모임 신청에 실패했습니다");
+      } else if (error.response?.status === 409) {
+        toast.warning("이미 신청한 모임입니다");
+        setIsPending(true);
+      } else if (error.response?.status === 410) {
+        toast.error("삭제된 모임입니다");
+      } else {
+        toast.error("모임 신청 중 오류가 발생했습니다");
+      }
+      setShowJoinConfirm(false);
+    }
   };
 
-  console.log("🎯 렌더링 상태:", { isLoading, error, meetingDetail: !!meetingDetail });
 
   if (isLoading) {
     return (
@@ -110,19 +138,7 @@ function MeetingDetailPage() {
     );
   }
 
-  // 날짜 포맷팅
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
-    const weekday = weekdays[date.getDay()];
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
 
-    return `${year}. ${month}. ${day}(${weekday}) ${hours}:${minutes.toString().padStart(2, '0')}`;
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -152,18 +168,16 @@ function MeetingDetailPage() {
           <div className="flex-1 flex flex-col gap-4 justify-center">
             <div className="w-full max-w-4xl mx-auto px-4 py-4">
               <div className="flex items-start justify-between pb-3">
-                {/* 수정 버튼 - 내 모임일 때만 표시 */}
+                {/* 수정/삭제 버튼 - 호스트일 때만 표시 */}
                 {isHost && (
                   <div className="ml-auto">
-                    <Button
-                      onClick={() => setShowEditModal(true)}
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                    >
-                      <Edit className="h-4 w-4" />
-                      수정
-                    </Button>
+                    <MeetingActionButtons
+                      meetingId={Number(meetingId)}
+                      role="host"
+                      location="detail-top"
+                      onEdit={() => setShowEditModal(true)}
+                      onDelete={() => {/* TODO: 삭제 핸들러 */ }}
+                    />
                   </div>
                 )}
               </div>
@@ -176,7 +190,7 @@ function MeetingDetailPage() {
               <div className="text-base text-muted-foreground whitespace-pre-line leading-relaxed">
                 {meetingDetail.location.address}
                 {"\n"}
-                {formatDate(meetingDetail.meetingDate)}
+                {formatMeetingDate(meetingDetail.meetingDate)}
                 {meetingDetail.maxParticipants && (
                   <>
                     {"\n"}
@@ -193,22 +207,14 @@ function MeetingDetailPage() {
               </div>
 
 
-              {isHost ? (
-                <Button
-                  onClick={() => navigate(`/mypage/meetings/hosting/${meetingId}/participations`)}
-                  className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm font-medium"
-                >
-                  승인 요청 목록 보기
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleJoinMeeting}
-                  disabled={isPending}
-                  className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm font-medium disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
-                >
-                  {isPending ? "승인 요청 중" : isLoggedIn ? "신청하기" : "로그인하고 신청하기"}
-                </Button>
-              )}
+              <MeetingActionButtons
+                meetingId={Number(meetingId)}
+                role={isHost ? "host" : "participant"}
+                location="detail-mid"
+                isPending={isPending}
+                isLoggedIn={isLoggedIn}
+                onJoin={handleJoinMeeting}
+              />
             </div>
           </div>
         </div>
@@ -305,25 +311,15 @@ function MeetingDetailPage() {
           </CardContent>
         </Card>
       </div>
-      {isHost ? (
-        <FixedBottomButton
-          onClick={() => navigate(`/mypage/meetings/hosting/${meetingId}/participations`)}
-        >
-          승인 요청 목록 보기
-        </FixedBottomButton>
-      ) : (
-        <FixedBottomButton
-          onClick={handleJoinMeeting}
-          disabled={isPending}
-        >
-          {isPending
-            ? "승인 요청 중"
-            : isLoggedIn
-              ? "이 모임 신청하기"
-              : "로그인하고 신청하기"
-          }
-        </FixedBottomButton>
-      )}
+      <MeetingActionButtons
+        meetingId={Number(meetingId)}
+        role={isHost ? "host" : "participant"}
+        location="detail-bottom"
+        onEdit={() => setShowEditModal(true)}
+        isPending={isPending}
+        isLoggedIn={isLoggedIn}
+        onJoin={handleJoinMeeting}
+      />
 
 
       <LoginRequiredDialog
