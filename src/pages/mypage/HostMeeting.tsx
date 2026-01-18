@@ -8,11 +8,14 @@ import CreateMeetingModal from "@/components/features/meetings/CreateMeetingModa
 import MeetingActionButtons from "@/components/features/meetings/MeetingActionButtons";
 import type { MyMeetingsResponse } from "@/api/me.api";
 
+import { useDeleteMeetingDialog } from "@/hooks/useDeleteMeetingDialog";
+
 const HostMeeting = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<MyMeetingsResponse | null>(null);
   const [page, setPage] = useState(1);
   const { meetings: hostedMeetings, totalPages, isLoading } = useMeQuery('hosted', 'all', page, 5);
+  const { handleDeleteMeeting, DeleteConfirmDialog } = useDeleteMeetingDialog();
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -38,10 +41,7 @@ const HostMeeting = () => {
                     setSelectedMeeting(meeting);
                     setIsModalOpen(true);
                   }}
-                  onDelete={() => {
-                    setSelectedMeeting(meeting);
-                    setIsModalOpen(true);
-                  }}
+                  onDelete={() => handleDeleteMeeting(meeting.meetingId)}
                 />
               </SmallMeetingCard>
             ))}
@@ -101,6 +101,9 @@ const HostMeeting = () => {
           </PaginationContent>
         </Pagination>
       )}
+
+      {/* 삭제 확인 모달 */}
+      <DeleteConfirmDialog />
     </div>
   )
 }

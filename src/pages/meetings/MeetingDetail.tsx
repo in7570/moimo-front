@@ -17,6 +17,8 @@ import { useJoinMeetingMutation } from "@/hooks/useMeetingMutations";
 import { useMeQuery } from "@/hooks/useMeQuery";
 import MeetingActionButtons from "@/components/features/meetings/MeetingActionButtons";
 import { formatMeetingDate } from "@/utils/dateFormat";
+import { useNavigate } from "react-router-dom";
+import { useDeleteMeetingDialog } from "@/hooks/useDeleteMeetingDialog";
 
 function MeetingDetailPage() {
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -36,6 +38,12 @@ function MeetingDetailPage() {
 
   // 모임 신청 mutation
   const joinMeetingMutation = useJoinMeetingMutation();
+  const navigate = useNavigate();
+
+  // 모임 삭제
+  const { handleDeleteMeeting, DeleteConfirmDialog } = useDeleteMeetingDialog({
+    onSuccess: () => navigate("/mypage/meetings/hosting")
+  });
 
   // 내가 신청한 모임 목록 조회
   const { meetings: pendingMeetings } = useMeQuery("joined", "pending", 1, 50);
@@ -118,8 +126,6 @@ function MeetingDetailPage() {
       setShowJoinConfirm(false);
     }
   };
-
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -176,7 +182,7 @@ function MeetingDetailPage() {
                       role="host"
                       location="detail-top"
                       onEdit={() => setShowEditModal(true)}
-                      onDelete={() => {/* TODO: 삭제 핸들러 */ }}
+                      onDelete={() => handleDeleteMeeting(Number(meetingId))}
                     />
                   </div>
                 )}
@@ -320,6 +326,7 @@ function MeetingDetailPage() {
         isLoggedIn={isLoggedIn}
         onJoin={handleJoinMeeting}
       />
+      <DeleteConfirmDialog />
 
 
       <LoginRequiredDialog
@@ -346,6 +353,9 @@ function MeetingDetailPage() {
         cancelText="취소"
         onConfirm={handleConfirmJoin}
       />
+
+      {/* 삭제 확인 모달 */}
+
     </div>
   );
 }
