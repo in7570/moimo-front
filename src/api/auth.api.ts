@@ -179,9 +179,15 @@ export interface VerifyUserResponse {
   profile_image: string;
   interests: {
     id: number;
-    name: string;
-  }[];
-  accessToken: string;
+    email: string;
+    nickname: string;
+    bio: string;
+    profileImage: string;
+    interests: {
+        id: number;
+        name: string;
+    }[];
+    accessToken: string;
 }
 
 // 사용자 인증

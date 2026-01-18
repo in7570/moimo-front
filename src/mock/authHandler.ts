@@ -3,16 +3,16 @@ import { httpUrl } from "./mockData";
 
 // Mock 사용자 정보 상태 관리 (userInfoHandler에서 이동)
 let mockUserInfo = {
-  id: 3,
-  email: "moimo@email.com",
-  nickname: "테스터",
-  bio: "소개글입니다",
-  interests: [
-    { id: 1, name: "인간관계(친목)" },
-    { id: 2, name: "술" },
-    { id: 3, name: "자기계발/공부" },
-  ],
-  profile_image: "https://picsum.photos/id/111/300/300",
+    id: 3,
+    email: "moimo@email.com",
+    nickname: "테스터",
+    bio: "소개글입니다",
+    interests: [
+        { id: 1, name: "인간관계(친목)" },
+        { id: 2, name: "술" },
+        { id: 3, name: "자기계발/공부" }
+    ],
+    profileImage: "https://picsum.photos/id/111/300/300"
 };
 
 // 일반 로그인 핸들러
@@ -424,41 +424,37 @@ const userUpdate = http.put(
         } catch (e) {
           interests = [rawInterests[0]];
         }
-      } else {
-        // 개별 필드 처리
-        interests = rawInterests;
-      }
 
-      const file = formData.get("file");
+        const file = formData.get("file");
 
-      console.log("User Update (Token Based):", {
-        bio,
-        interests,
-        file,
-        token: authHeader,
-      });
+        console.log("User Update (Token Based):", {
+            bio,
+            interests,
+            file,
+            token: authHeader
+        });
 
-      // Mock 상태 업데이트
-      mockUserInfo = {
-        ...mockUserInfo,
-        bio: bio || mockUserInfo.bio,
-        // interests가 ID인 경우와 이름인 경우를 모두 대응 (Mock 데이터 보정을 위해)
-        interests: interests.map((item: any, index: number) => {
-          if (typeof item === "number" || !isNaN(Number(item))) {
-            // ID가 들어온 경우 (실제 서비스와 유사)
-            return { id: Number(item), name: `관심사 ${item}` };
-          }
-          return { id: index + 100, name: item }; // 이름이 들어온 경우 (기존 방식)
-        }),
-      };
+        // Mock 상태 업데이트
+        mockUserInfo = {
+            ...mockUserInfo,
+            bio: bio || mockUserInfo.bio,
+            // interests가 ID인 경우와 이름인 경우를 모두 대응 (Mock 데이터 보정을 위해)
+            interests: interests.map((item: any, index: number) => {
+                if (typeof item === 'number' || !isNaN(Number(item))) {
+                    // ID가 들어온 경우 (실제 서비스와 유사)
+                    return { id: Number(item), name: `관심사 ${item}` };
+                }
+                return { id: index + 100, name: item }; // 이름이 들어온 경우 (기존 방식)
+            }),
+        };
 
-      // 이미지 파일이 있는 경우
-      if (file && file instanceof File) {
-        mockUserInfo.profile_image = URL.createObjectURL(file);
-      }
+        // 이미지 파일이 있는 경우
+        if (file && file instanceof File) {
+            mockUserInfo.profileImage = URL.createObjectURL(file);
+        }
 
-      await delay(1000);
-      return HttpResponse.json(mockUserInfo);
+        await delay(1000);
+        return HttpResponse.json(mockUserInfo);
     } catch (error) {
       console.error("userUpdate handler error:", error);
       return new HttpResponse(null, { status: 500 });
