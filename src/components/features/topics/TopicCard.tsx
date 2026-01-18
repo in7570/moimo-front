@@ -15,7 +15,7 @@ function TopicCard({
   return (
     <Link
       to={to}
-      className="flex flex-col items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-accent/50 px-10"
+      className="flex flex-col items-center justify-center rounded-lg transition-colors cursor-pointer hover:bg-accent/50 px-4 w-full"
     >
       <div className="w-full aspect-square rounded-full bg-secondary flex items-center justify-center overflow-hidden mb-3 border border-yellow-500">
         {imageUrl ? (

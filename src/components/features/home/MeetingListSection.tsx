@@ -28,7 +28,7 @@ function MeetingListSection({
   const finalTitle = title.replace("{nickname}", safeNickname);
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-8">
+    <div className="w-full max-w-6xl mx-auto py-8 pt-12">
       <div className="flex justify-between w-full mb-4">
         <div className="text-xl font-bold ">{finalTitle}</div>
         {seeMoreHref && (
@@ -38,9 +38,9 @@ function MeetingListSection({
         )}
       </div>
       {isLoading && (
-        <div className="grid grid-cols-4 gap-4 justify-items-center">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3 justify-items-center">
           {[...Array(8)].map((_, index) => (
-            <Skeleton key={index} className="w-48 h-60 rounded-lg" />
+            <Skeleton key={index} className="w-full h-80 rounded-lg" />
           ))}
         </div>
       )}
