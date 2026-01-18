@@ -21,7 +21,7 @@ const MeetingsPage = () => {
   // URL에서 직접 상태 읽기
   const { filters } = useMeetingFilter(searchParams);
   const page = Number(searchParams.get("page") || "1");
-  const limit = Number(searchParams.get("limit") || "10");
+  const limit = Number(searchParams.get("limit") || "12");
 
   // URL 업데이트 로직
   const updateUrlParams = (newValues: Partial<GetMeetingsParams>) => {
