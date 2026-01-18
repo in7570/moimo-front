@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createMeeting, updateMeeting, joinMeeting } from "@/api/meeting.api";
+import { createMeeting, updateMeeting, joinMeeting, deleteMeeting } from "@/api/meeting.api";
 
 // 모임 생성 훅
 export const useCreateMeetingMutation = () => {
@@ -49,3 +49,21 @@ export const useJoinMeetingMutation = () => {
     },
   });
 };
+
+// 모임 삭제 훅
+export const useDeleteMeetingMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (meetingId: number) => deleteMeeting(meetingId),
+    onSuccess: () => {
+      // 성공 시 모임 목록 다시 가져오기
+      queryClient.invalidateQueries({ queryKey: ["meetings"] });
+      queryClient.invalidateQueries({ queryKey: ["myMeetings"] });
+    },
+    onError: (error: any) => {
+      console.error("모임 삭제 실패:", error);
+    },
+  });
+};
+
