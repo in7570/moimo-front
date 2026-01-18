@@ -10,7 +10,7 @@ function Home() {
   return (
     <div className="flex flex-col justify-center items-center">
       <SearchSection />
-      <div className="flex flex-col pt-8 items-center w-full bg-card">
+      <div className="flex flex-col pt-8 items-center w-full">
         <TopicSection />
         {isLoggedIn && (
           <>
