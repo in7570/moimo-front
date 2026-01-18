@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
@@ -109,7 +110,7 @@ const ResetPassword = () => {
       data,
       {
         onSuccess: () => {
-          alert("비밀번호 변경이 완료되었습니다.");
+          toast.success("비밀번호 변경이 완료되었습니다.");
           navigate("/login");
         },
         onError: (error: AxiosError) => {

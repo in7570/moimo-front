@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useNavigate } from "react-router-dom";
 import { useFindPasswordMutation } from "@/hooks/useAuthMutations";
+import { toast } from "sonner";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,7 +40,7 @@ const FindPassword = () => {
   const onSubmit = (data: FindPasswordFormValues) => {
     findPassword(data, {
       onSuccess: () => {
-        alert("이메일로 인증코드가 전송되었습니다.");
+        toast.success("이메일로 인증코드가 전송되었습니다.");
         navigate("/reset-password", { state: { email: data.email } });
       },
       onError: (error: AxiosError) => {

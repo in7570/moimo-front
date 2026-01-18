@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,20 +64,20 @@ const Join = () => {
   const onSubmit = async (data: JoinFormValues) => {
     // 이메일 중복 확인 여부 체크
     if (!emailCheckMutation.isSuccess) {
-      alert("이메일 중복 확인을 해주세요.");
+      toast.error("이메일 중복 확인을 해주세요.");
       return;
     }
 
     // 닉네임 중복 확인 여부 체크
     if (!nicknameCheckMutation.isSuccess) {
-      alert("닉네임 중복 확인을 해주세요.");
+      toast.error("닉네임 중복 확인을 해주세요.");
       return;
     }
 
     try {
       const joinInfo = await joinMutation(data);
       const { /* id, email, */ nickname } = joinInfo.user;
-      alert("회원가입이 완료되었습니다.");
+      toast.success("회원가입이 완료되었습니다.");
       navigate("/user-info", { state: { /* id, email, */ nickname } });
     } catch (error) {
       console.error("회원가입 중 오류 발생: ", error);

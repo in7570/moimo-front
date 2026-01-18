@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-label";
@@ -61,7 +62,7 @@ const UserInfo = () => {
       formData.append("interests", JSON.stringify(data.interests));
 
       await userUpdateMutation.mutateAsync(formData);
-      alert("프로필 등록이 완료되었습니다.");
+      toast.success("프로필 등록이 완료되었습니다.");
       navigate("/");
     } catch (error) {
       setError("root",
