@@ -19,9 +19,7 @@ import { useInterestQuery } from "@/hooks/useInterestQuery";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import ConfirmDialog from "@/components/common/ConfirmDialog";
 import type { PlaceInfo } from "@/models/kakao-maps.model";
 
 // Zod 스키마 정의
@@ -79,11 +77,8 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
 
   const createMeetingMutation = useCreateMeetingMutation();
   const updateMeetingMutation = useUpdateMeetingMutation();
-  const navigate = useNavigate();
 
-  // 생성 완료 후 네비게이션 모달 상태
-  const [showNavigationDialog, setShowNavigationDialog] = useState(false);
-  const [createdMeetingId, setCreatedMeetingId] = useState<number | null>(null);
+
 
   // 폼 데이터 감시
   const selectedInterestId = watch("interestId");
@@ -237,14 +232,11 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
         toast.success("모임이 수정되었습니다!");
         onOpenChange(false);
       } else {
-        const createdMeeting = await createMeetingMutation.mutateAsync(
-          formData
-        );
-        if (createdMeeting?.meetingId) {
-          setCreatedMeetingId(createdMeeting.meetingId);
-          setShowNavigationDialog(true);
-          onOpenChange(false);
-        }
+        await createMeetingMutation.mutateAsync(formData);
+        toast.success("모임이 생성되었습니다!", {
+          description: "마이페이지 - 내모임에서 확인해보세요!"
+        });
+        onOpenChange(false);
       }
     } catch (error: any) {
       console.error("Submission error:", error);
@@ -443,15 +435,7 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
         </DialogContent>
       </Dialog>
 
-      <ConfirmDialog
-        open={showNavigationDialog}
-        onOpenChange={setShowNavigationDialog}
-        title="신청 완료되었습니다!"
-        description="해당 페이지로 이동하시겠어요?"
-        confirmText="가보자!"
-        cancelText="나중에"
-        onConfirm={() => createdMeetingId && navigate(`/meetings/${createdMeetingId}`)}
-      />
+
     </>
   );
 }
