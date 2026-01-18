@@ -21,7 +21,7 @@ function SearchSection() {
     >
       <div className="mb-12">
         <p className="text-3xl font-medium">
-          당신의 관심사로 시작하는 새로운 만남, <p className="pt-4 text-4xl font-bold">모이모</p>
+          당신의 관심사로 시작하는 새로운 만남, <p className="pt-4 text-4xl font-bold">MoiMo</p>
         </p>
       </div>
       <form
