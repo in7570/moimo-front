@@ -3,6 +3,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { Separator } from "@/components/ui/separator";
 import ChatMessageItem from "@/components/features/chattings/ChatMessage";
+import DateSeparator from "@/components/features/chattings/DateSeparator";
+import { formatDateSeparator, toYYYYMMDD } from "@/utils/dateFormat";
+import { Fragment } from "react";
 import ChatRoomItem from "@/components/features/chattings/ChatRoomItem";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -177,14 +180,27 @@ const Chatting = () => {
               ref={scrollRef}
               className="flex flex-col gap-4 p-4 flex-grow overflow-y-auto"
             >
-              {messages.map((msg, index) => (
-                <ChatMessageItem
-                  key={`${msg.id}-${index}`}
-                  message={msg}
-                  isMine={msg.senderId === userId}
-                  hostId={selectedMeeting.hostId}
-                />
-              ))}
+              {messages.map((msg, index) => {
+                const showDateSeparator =
+                  index === 0 ||
+                  toYYYYMMDD(msg.createdAt) !==
+                    toYYYYMMDD(messages[index - 1].createdAt);
+
+                return (
+                  <Fragment key={msg.id || index}>
+                    {showDateSeparator && (
+                      <DateSeparator
+                        date={formatDateSeparator(msg.createdAt)}
+                      />
+                    )}
+                    <ChatMessageItem
+                      message={msg}
+                      isMine={msg.senderId === userId}
+                      hostId={selectedMeeting.hostId}
+                    />
+                  </Fragment>
+                );
+              })}
             </div>
 
             {/* 입력창 */}
