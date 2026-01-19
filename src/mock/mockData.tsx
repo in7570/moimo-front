@@ -6,7 +6,7 @@ import type {
   Participant,
   ParticipationStatus,
 } from "@/models/participation.model";
-import { interestImageMap } from "@/lib/interestImageMap"; // Import interestImageMap
+import { interestImageMap } from "@/utils/interestImageMap"; // Import interestImageMap
 
 export const httpUrl =
   import.meta.env.VITE_API_URL || "https://moimo-back.vercel.app";
