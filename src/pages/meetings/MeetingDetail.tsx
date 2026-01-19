@@ -22,6 +22,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { MeetingParticipantsCard } from "@/components/features/meetings/MeetingParticipantsCard";
 import { isMeetingClosed } from "@/utils/meetingUtils";
 import { cn } from "@/lib/utils";
+import { useParticipationsQuery } from "@/hooks/useParticipationsQuery";
 
 function MeetingDetailPage() {
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -66,7 +67,6 @@ function MeetingDetailPage() {
     ? isMeetingClosed(meetingDetail.currentParticipants, meetingDetail.maxParticipants, meetingDetail.meetingDate)
     : false;
 
-  // 내가 이미 신청한 모임인지 확인
   useEffect(() => {
     if (meetingId && pendingMeetings) {
       const isAlreadyApplied = pendingMeetings.some(
@@ -75,6 +75,17 @@ function MeetingDetailPage() {
       setIsPending(isAlreadyApplied);
     }
   }, [meetingId, pendingMeetings]);
+
+  // 신청자 알림 토스트
+  const { data: participations } = useParticipationsQuery(Number(meetingId));
+  const hasNotifiedRef = useRef(false);
+
+  useEffect(() => {
+    if (isHost && participations?.some(p => p.status === 'PENDING') && !hasNotifiedRef.current) {
+      toast.info("새로운 모이미가 승인 요청 중입니다!");
+      hasNotifiedRef.current = true;
+    }
+  }, [isHost, participations]);
 
 
   // 설명 텍스트 높이 확인
@@ -137,7 +148,6 @@ function MeetingDetailPage() {
       </div>
     );
   }
-
 
 
   return (

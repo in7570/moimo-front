@@ -12,15 +12,15 @@ interface MeetingCardProps {
   meeting: Meeting;
   imageUrl?: string;
   className?: string;
+  hasPendingApplicants?: boolean;
 }
-
-function MeetingCard({ meeting, imageUrl, className }: MeetingCardProps) {
+function MeetingCard({ meeting, imageUrl, className, hasPendingApplicants }: MeetingCardProps) {
   const { meetingId, title, address, currentParticipants } = meeting;
   const href = `/meetings/${meetingId}`;
   return (
     <Link
       to={href}
-      className="block w-full h-80 rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      className="relative block w-full h-80 rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
     >
       <Card
         className={cn(
@@ -28,6 +28,12 @@ function MeetingCard({ meeting, imageUrl, className }: MeetingCardProps) {
           className,
         )}
       >
+        {hasPendingApplicants && (
+          <div
+            className="absolute top-2 left-2 w-5 h-5 rounded-full bg-orange-500 border-2 border-white shadow-md z-20"
+            title="새로운 신청자가 있습니다"
+          />
+        )}
         {/* 상단: 모임 사진*/}
         <div className="relative w-full h-[60%]">
           {isMeetingClosed(meeting.currentParticipants, meeting.maxParticipants, meeting.meetingDate) && (

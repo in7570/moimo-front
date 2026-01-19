@@ -9,6 +9,39 @@ import MeetingActionButtons from "@/components/features/meetings/MeetingActionBu
 import type { MyMeetingsResponse } from "@/api/me.api";
 
 import { useDeleteMeetingDialog } from "@/hooks/useDeleteMeetingDialog";
+import { useParticipationsQuery } from "@/hooks/useParticipationsQuery";
+
+const MeetingCardWithBadge = ({
+  meeting,
+  onEdit,
+  onDelete
+}: {
+  meeting: MyMeetingsResponse;
+  onEdit: () => void;
+  onDelete: () => void;
+}) => {
+  const { data: participations, isLoading } = useParticipationsQuery(meeting.meetingId);
+  const hasPendingApplicants = participations?.some(p => p.status === 'PENDING');
+
+  if (isLoading) {
+    return <div className="w-full h-[108px] bg-gray-50 animate-pulse rounded-xl border border-gray-100" />;
+  }
+
+  return (
+    <SmallMeetingCard
+      meeting={meeting}
+      hasPendingApplicants={hasPendingApplicants}
+    >
+      <MeetingActionButtons
+        meetingId={meeting.meetingId}
+        role="host"
+        location="hosting-list"
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </SmallMeetingCard>
+  );
+};
 
 const HostMeeting = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,18 +65,15 @@ const HostMeeting = () => {
         ) : (
           <>
             {hostedMeetings?.map((meeting) => (
-              <SmallMeetingCard key={meeting.meetingId} meeting={meeting}>
-                <MeetingActionButtons
-                  meetingId={meeting.meetingId}
-                  role="host"
-                  location="hosting-list"
-                  onEdit={() => {
-                    setSelectedMeeting(meeting);
-                    setIsModalOpen(true);
-                  }}
-                  onDelete={() => handleDeleteMeeting(meeting.meetingId)}
-                />
-              </SmallMeetingCard>
+              <MeetingCardWithBadge
+                key={meeting.meetingId}
+                meeting={meeting}
+                onEdit={() => {
+                  setSelectedMeeting(meeting);
+                  setIsModalOpen(true);
+                }}
+                onDelete={() => handleDeleteMeeting(meeting.meetingId)}
+              />
             ))}
             {/* Empty State */}
             {(!hostedMeetings || hostedMeetings.length === 0) && (
