@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useInterestQuery } from "@/hooks/useInterestQuery";
 import { useUserUpdateMutation } from "@/hooks/useUserInfoMutations";
 import { useAuthQuery } from "@/hooks/useAuthQuery";
@@ -24,6 +25,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const profileSchema = z.object({
+  nickname: z.string().min(2, "닉네임은 2자 이상 입력해주세요.").max(20, "닉네임은 20자 이내로 입력해주세요."),
   bio: z.string().max(100, "자기소개는 100자 이내로 입력해주세요."),
   interests: z.array(z.number()).min(3, "관심사를 3개 이상 선택해주세요!"),
 });
@@ -66,6 +68,7 @@ const ProfileModal = ({ isOpen, onClose, userInfo, userId, readOnly }: ProfileMo
   const userUpdateMutation = useUserUpdateMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
 
   // 우선순위: fetch된 데이터 > props로 전달된 데이터
   const displayUserInfo = fetchedUser || userInfo;
@@ -85,6 +88,7 @@ const ProfileModal = ({ isOpen, onClose, userInfo, userId, readOnly }: ProfileMo
     resolver: zodResolver(profileSchema),
     mode: "onChange",
     defaultValues: {
+      nickname: "",
       bio: "",
       interests: [],
     }
@@ -93,6 +97,7 @@ const ProfileModal = ({ isOpen, onClose, userInfo, userId, readOnly }: ProfileMo
   useEffect(() => {
     if (displayUserInfo) {
       reset({
+        nickname: displayUserInfo.nickname || "",
         bio: displayUserInfo.bio || "",
         interests: displayUserInfo.interests?.map((i: Interest) => i.id) || [],
       });
@@ -130,6 +135,7 @@ const ProfileModal = ({ isOpen, onClose, userInfo, userId, readOnly }: ProfileMo
   const onSubmit = async (data: ProfileFormValues) => {
     try {
       const formData = new FormData();
+      formData.append("nickname", data.nickname);
       formData.append("bio", data.bio);
       formData.append("interests", JSON.stringify(data.interests));
 
@@ -193,9 +199,46 @@ const ProfileModal = ({ isOpen, onClose, userInfo, userId, readOnly }: ProfileMo
                   name="profileImage"
                 />
               </div>
-              <h2 className="text-xl font-bold text-gray-900">
-                {isUserLoading ? <Skeleton className="h-7 w-28" /> : (displayUserInfo?.nickname || "사용자")}
-              </h2>
+              <div className="flex flex-col items-center w-full">
+                {isEditingNickname && !isReadOnly ? (
+                  <div className="w-full max-w-[200px] space-y-1">
+                    <Input
+                      {...register("nickname")}
+                      autoFocus
+                      onBlur={() => setIsEditingNickname(false)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          setIsEditingNickname(false);
+                        }
+                        if (e.key === "Escape") {
+                          setValue("nickname", displayUserInfo?.nickname || "");
+                          setIsEditingNickname(false);
+                        }
+                      }}
+                      className="text-center h-8 text-lg font-bold"
+                    />
+                    {errors.nickname && (
+                      <p className="text-[10px] text-red-500 text-center">{errors.nickname.message}</p>
+                    )}
+                  </div>
+                ) : (
+                  <h2
+                    className={cn(
+                      "text-xl font-bold text-gray-900",
+                      !isReadOnly && "cursor-pointer hover:text-yellow-500 transition-colors"
+                    )}
+                    onDoubleClick={() => !isReadOnly && setIsEditingNickname(true)}
+                    title={!isReadOnly ? "더블클릭하여 수정" : undefined}
+                  >
+                    {isUserLoading ? (
+                      <Skeleton className="h-7 w-28" />
+                    ) : (
+                      watch("nickname") || displayUserInfo?.nickname || "사용자"
+                    )}
+                  </h2>
+                )}
+              </div>
             </div>
 
             {/* Bio Section */}
