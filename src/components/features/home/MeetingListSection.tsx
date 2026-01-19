@@ -9,12 +9,14 @@ interface MeetingListSectionProps {
   title: string;
   queryOptions: GetMeetingsParams;
   seeMoreHref?: string;
+  hideIfEmpty?: boolean;
 }
 
 function MeetingListSection({
   title,
   queryOptions,
   seeMoreHref,
+  hideIfEmpty = false,
 }: MeetingListSectionProps) {
   const { nickname } = useAuthStore();
   const {
@@ -26,6 +28,10 @@ function MeetingListSection({
   const meetings = meetingsResponse?.data || [];
   const safeNickname = nickname || "예비 모이머";
   const finalTitle = title.replace("{nickname}", safeNickname);
+
+  if (hideIfEmpty && !isLoading && meetings.length === 0) {
+    return null;
+  }
 
   return (
     <div className="w-full max-w-6xl mx-auto py-8 pt-12">

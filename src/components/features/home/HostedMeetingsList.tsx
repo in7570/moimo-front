@@ -1,13 +1,12 @@
 import MeetingList from "@/components/features/home/MeetingList";
 import { useMeQuery } from "@/hooks/useMeQuery";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { useAuthStore } from "@/store/authStore";
+import { Link } from "react-router-dom";
 
-function JoinedMeetingsList() {
-  const { nickname } = useAuthStore();
+function HostedMeetingsList() {
   const { meetings, isLoading, isError, error } = useMeQuery(
-    "joined",
-    "accepted",
+    "hosted",
+    "all",
     1,
     4,
   );
@@ -29,11 +28,16 @@ function JoinedMeetingsList() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-8">
-      <div className="text-xl font-bold mb-4">{nickname} 님이 가입한 모임</div>
+    <div className="w-full max-w-6xl mx-auto py-8 pt-12">
+      <div className="flex justify-between w-full mb-4">
+        <div className="text-xl font-bold ">내 모임 한눈에 보기</div>
+        <Link to="/mypage/meetings/hosting" className="text-sm cursor-pointer">
+          전체보기
+        </Link>
+      </div>
       <MeetingList meetings={meetings} />
     </div>
   );
 }
 
-export default JoinedMeetingsList;
+export default HostedMeetingsList;
