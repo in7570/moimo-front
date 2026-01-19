@@ -1,6 +1,6 @@
 import type { MyMeetingsResponse } from "@/api/me.api";
 import { Card } from "@/components/ui/card";
-import { getDistrictFromAddress } from "@/lib/formatAddress";
+import { getDistrictFromAddress } from "@/utils/formatAddress";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Calendar, MapPin, Users } from "lucide-react";

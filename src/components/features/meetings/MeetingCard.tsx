@@ -4,7 +4,7 @@ import { IoLocationOutline } from "react-icons/io5";
 import { AiOutlineTeam } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import type { Meeting } from "@/models/meeting.model";
-import { getDistrictFromAddress } from "@/lib/formatAddress";
+import { getDistrictFromAddress } from "@/utils/formatAddress";
 import defaultMeetingImage from "@/assets/images/moimo-meetings.png";
 
 interface MeetingCardProps {

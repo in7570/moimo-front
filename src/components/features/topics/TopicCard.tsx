@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { interestImageMap } from "@/lib/interestImageMap";
+import { interestImageMap } from "@/utils/interestImageMap";
 
 interface TopicCardProps {
   topicName: string;
