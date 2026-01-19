@@ -26,6 +26,7 @@ interface MeetingActionButtonsProps {
   onCancelApproval?: () => void;
   onCancelReject?: () => void;
   isLoading?: boolean;
+  isClosed?: boolean;
 }
 
 function MeetingActionButtons({
@@ -45,6 +46,7 @@ function MeetingActionButtons({
   onCancelApproval,
   onCancelReject,
   isLoading = false,
+  isClosed = false,
 }: MeetingActionButtonsProps) {
   const navigate = useNavigate();
 
@@ -245,18 +247,24 @@ function MeetingActionButtons({
       }
     }
 
-    const buttonText = isPending
-      ? "승인 요청 중"
-      : isLoggedIn
-        ? "이 모임 신청하기"
-        : "로그인하고 신청하기";
+    const buttonText = isJoined
+      ? "채팅방으로 이동"
+      : isPending
+        ? "승인 요청 중"
+        : isClosed
+          ? "마감된 모임입니다."
+          : isLoggedIn
+            ? "이 모임 신청하기"
+            : "로그인하고 신청하기";
+
+    const isDisabled = isPending || (isClosed && !isJoined);
 
     // 상단 인라인 신청하기 버튼
     if (location === "detail-mid") {
       return (
         <Button
           onClick={onJoin}
-          disabled={isPending}
+          disabled={isDisabled}
           className="w-full h-16 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-base font-semibold disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
         >
           {buttonText}
@@ -267,7 +275,7 @@ function MeetingActionButtons({
     // 하단 고정 버튼
     if (location === "detail-bottom") {
       return (
-        <FixedBottomButton onClick={onJoin} disabled={isPending}>
+        <FixedBottomButton onClick={onJoin} disabled={isDisabled}>
           {buttonText}
         </FixedBottomButton>
       );

@@ -5,6 +5,7 @@ import { AiOutlineTeam } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import type { Meeting } from "@/models/meeting.model";
 import { getDistrictFromAddress } from "@/utils/formatAddress";
+import { isMeetingClosed } from "@/utils/meetingUtils";
 import defaultMeetingImage from "@/assets/images/moimo-meetings.png";
 
 interface MeetingCardProps {
@@ -29,17 +30,30 @@ function MeetingCard({ meeting, imageUrl, className }: MeetingCardProps) {
       >
         {/* 상단: 모임 사진*/}
         <div className="relative w-full h-[60%]">
+          {isMeetingClosed(meeting.currentParticipants, meeting.maxParticipants, meeting.meetingDate) && (
+            <div className="absolute inset-0 z-10 bg-black/40 flex items-center justify-center">
+              <span className="bg-black/60 text-white px-3 py-1.5 rounded-full text-sm font-bold border border-white/20">
+                마감됨
+              </span>
+            </div>
+          )}
           {imageUrl ? (
             <img
               src={imageUrl}
               alt={title}
-              className="w-full h-full object-cover"
+              className={cn(
+                "w-full h-full object-cover",
+                isMeetingClosed(meeting.currentParticipants, meeting.maxParticipants, meeting.meetingDate) && "grayscale-[0.5]"
+              )}
             />
           ) : (
             <img
               src={defaultMeetingImage}
               alt={title}
-              className="w-full h-full object-cover"
+              className={cn(
+                "w-full h-full object-cover",
+                isMeetingClosed(meeting.currentParticipants, meeting.maxParticipants, meeting.meetingDate) && "grayscale-[0.5]"
+              )}
             />
           )}
         </div>

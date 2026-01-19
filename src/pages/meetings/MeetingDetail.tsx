@@ -20,6 +20,8 @@ import { useDeleteMeetingDialog } from "@/hooks/useDeleteMeetingDialog";
 import { useInterestQuery } from "@/hooks/useInterestQuery";
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { MeetingParticipantsCard } from "@/components/features/meetings/MeetingParticipantsCard";
+import { isMeetingClosed } from "@/utils/meetingUtils";
+import { cn } from "@/lib/utils";
 
 function MeetingDetailPage() {
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -58,6 +60,11 @@ function MeetingDetailPage() {
 
   // 내 모임인지 확인
   const isHost = meetingDetail?.host.nickname === nickname;
+
+  // 마감 여부 확인
+  const isClosed = meetingDetail
+    ? isMeetingClosed(meetingDetail.currentParticipants, meetingDetail.maxParticipants, meetingDetail.meetingDate)
+    : false;
 
   // 내가 이미 신청한 모임인지 확인
   useEffect(() => {
@@ -138,18 +145,31 @@ function MeetingDetailPage() {
       <div className="flex-1 w-full max-w-5xl mx-auto pb-8 space-y-8 px-4 md:px-0">
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* 이미지 */}
-          <div className="w-full md:w-1/2 aspect-square rounded-2xl overflow-hidden bg-muted flex-shrink-0 shadow-sm border border-border/50">
+          <div className="relative w-full md:w-1/2 aspect-square rounded-2xl overflow-hidden bg-muted flex-shrink-0 shadow-sm border border-border/50">
+            {isClosed && (
+              <div className="absolute inset-0 z-10 bg-black/40 flex items-center justify-center">
+                <span className="bg-black/60 text-white px-3 py-1.5 rounded-full text-sm font-bold border border-white/20">
+                  마감됨
+                </span>
+              </div>
+            )}
             {meetingDetail.meetingImage ? (
               <img
                 src={meetingDetail.meetingImage}
                 alt={meetingDetail.title}
-                className="w-full h-full object-cover"
+                className={cn(
+                  "w-full h-full object-cover",
+                  isClosed && "grayscale-[0.5]"
+                )}
               />
             ) : (
               <img
                 src={moimoMeeting}
                 alt={meetingDetail.title}
-                className="w-full h-full object-cover"
+                className={cn(
+                  "w-full h-full object-cover",
+                  isClosed && "grayscale-[0.5]"
+                )}
               />
             )}
           </div>
@@ -209,6 +229,7 @@ function MeetingDetailPage() {
                 isPending={isPending}
                 isJoined={joinedMeetings?.some((m) => m.meetingId === Number(meetingId))}
                 isLoggedIn={isLoggedIn}
+                isClosed={isClosed}
                 onJoin={handleJoinMeeting}
                 onChat={() => navigate("/chats", { state: { meetingId: Number(meetingId) } })}
               />
@@ -277,6 +298,7 @@ function MeetingDetailPage() {
         isPending={isPending}
         isJoined={joinedMeetings?.some((m) => m.meetingId === Number(meetingId))}
         isLoggedIn={isLoggedIn}
+        isClosed={isClosed}
         onJoin={handleJoinMeeting}
         onChat={() => navigate("/chats", { state: { meetingId: Number(meetingId) } })}
       />
