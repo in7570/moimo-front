@@ -173,7 +173,7 @@ function MeetingActionButtons({
           <>
             <Button
               variant="outline"
-              className="h-10 border-[1.5px] border-[#FF8A8A] text-[#FF8A8A] font-semibold hover:bg-[#FF8A8A]/10 shadow-none gap-2"
+              className="h-10 border-2 border-[#FF8A8A] text-[#FF8A8A] font-bold hover:bg-[#FF8A8A]/10 shadow-none gap-2"
               onClick={onReject}
             >
               <X className="w-4 h-4" fill="currentColor" />
@@ -181,7 +181,7 @@ function MeetingActionButtons({
             </Button>
             <Button
               variant="outline"
-              className="h-10 border-[1.5px] border-[#FFB800] text-[#FFB800] hover:bg-[#FFB800]/10 shadow-none gap-2 font-semibold"
+              className="h-10 border-2 border-[#FFB800] text-[#FFB800] hover:bg-[#FFB800]/10 shadow-none gap-2 font-bold"
               onClick={onApprove}
             >
               <UserCheck className="w-4 h-4" fill="currentColor" />
@@ -192,7 +192,7 @@ function MeetingActionButtons({
         {applicantStatus === "ACCEPTED" && (
           <Button
             variant="outline"
-            className="h-10 border-[1.5px] border-gray-400 text-gray-500 hover:bg-gray-50 shadow-none gap-2 font-semibold"
+            className="h-10 border-2 border-gray-400 text-gray-500 hover:bg-gray-50 shadow-none gap-2 font-bold"
             onClick={onCancelApproval}
           >
             <RotateCcw className="w-4 h-4" />
@@ -202,7 +202,7 @@ function MeetingActionButtons({
         {applicantStatus === "REJECTED" && (
           <Button
             variant="outline"
-            className="h-10 border-[1.5px] border-blue-400 text-blue-500 hover:bg-blue-50 shadow-none gap-2 font-semibold"
+            className="h-10 border-2 border-blue-400 text-blue-500 hover:bg-blue-50 shadow-none gap-2 font-semibold"
             onClick={onCancelReject}
           >
             <RotateCcw className="w-4 h-4" />

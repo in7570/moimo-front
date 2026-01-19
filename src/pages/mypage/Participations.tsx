@@ -6,6 +6,7 @@ import ParticipantSection from "@/components/features/mypage/ParticipantSection"
 import { useParticipationsQuery } from "@/hooks/useParticipationsQuery";
 import { useApproveAllParticipations } from "@/hooks/useParticipateMutations";
 import { UserCheck, ChevronLeft } from "lucide-react";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const Participations = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +15,7 @@ const Participations = () => {
   const [isWaitingOpen, setIsWaitingOpen] = useState(true);
   const [isConfirmedOpen, setIsConfirmedOpen] = useState(true);
   const [isRejectedOpen, setIsRejectedOpen] = useState(false);
-  const { data: participants } = useParticipationsQuery(meetingId);
+  const { data: participants, isLoading } = useParticipationsQuery(meetingId);
   const { mutate: approveAll } = useApproveAllParticipations();
   const navigate = useNavigate();
 
@@ -39,55 +40,63 @@ const Participations = () => {
         <h1 className="text-2xl font-bold text-gray-900">모이미 관리</h1>
       </div>
 
-      {/* 참여 대기 멤버 섹션 */}
-      <ParticipantSection
-        title="참여 대기 멤버"
-        count={waitingParticipants.length}
-        isOpen={isWaitingOpen}
-        onToggle={() => setIsWaitingOpen(!isWaitingOpen)}
-        actionButton={
-          <Button
-            variant="outline"
-            className="border-2 border-[#FFB800] text-[#FFB800] hover:bg-[#FFB800]/10 font-semibold h-10 px-4 rounded-md text-xs shadow-none gap-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              approveAll({ meetingId });
-            }}
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center h-[400px]">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <>
+          {/* 참여 대기 멤버 섹션 */}
+          <ParticipantSection
+            title="참여 대기 멤버"
+            count={waitingParticipants.length}
+            isOpen={isWaitingOpen}
+            onToggle={() => setIsWaitingOpen(!isWaitingOpen)}
+            actionButton={
+              <Button
+                variant="outline"
+                className="border-2 border-[#FFB800] text-[#FFB800] hover:bg-[#FFB800]/10 font-semibold h-10 px-4 rounded-md text-xs shadow-none gap-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  approveAll({ meetingId });
+                }}
+              >
+                <UserCheck className="w-3 h-3" fill="currentColor" />
+                모두승인
+              </Button>
+            }
           >
-            <UserCheck className="w-3 h-3" fill="currentColor" />
-            모두승인
-          </Button>
-        }
-      >
-        {waitingParticipants.map((participant) => (
-          <ParticipantCard key={participant.participationId} meetingId={meetingId} participant={participant} />
-        ))}
-      </ParticipantSection>
+            {waitingParticipants.map((participant) => (
+              <ParticipantCard key={participant.participationId} meetingId={meetingId} participant={participant} />
+            ))}
+          </ParticipantSection>
 
-      {/* 참여 확정 멤버 섹션 */}
-      <ParticipantSection
-        title="참여 확정 멤버"
-        count={confirmedParticipants.length}
-        isOpen={isConfirmedOpen}
-        onToggle={() => setIsConfirmedOpen(!isConfirmedOpen)}
-      >
-        {confirmedParticipants.map((participant) => (
-          <ParticipantCard key={participant.participationId} meetingId={meetingId} participant={participant} />
-        ))}
-      </ParticipantSection>
+          {/* 참여 확정 멤버 섹션 */}
+          <ParticipantSection
+            title="참여 확정 멤버"
+            count={confirmedParticipants.length}
+            isOpen={isConfirmedOpen}
+            onToggle={() => setIsConfirmedOpen(!isConfirmedOpen)}
+          >
+            {confirmedParticipants.map((participant) => (
+              <ParticipantCard key={participant.participationId} meetingId={meetingId} participant={participant} />
+            ))}
+          </ParticipantSection>
 
-      {/* 거절된 멤버 섹션 */}
-      <ParticipantSection
-        title="거절된 멤버"
-        count={rejectedParticipants.length}
-        isOpen={isRejectedOpen}
-        onToggle={() => setIsRejectedOpen(!isRejectedOpen)}
-        contentClassName="opacity-60"
-      >
-        {rejectedParticipants.map((participant) => (
-          <ParticipantCard key={participant.participationId} meetingId={meetingId} participant={participant} />
-        ))}
-      </ParticipantSection>
+          {/* 거절된 멤버 섹션 */}
+          <ParticipantSection
+            title="거절된 멤버"
+            count={rejectedParticipants.length}
+            isOpen={isRejectedOpen}
+            onToggle={() => setIsRejectedOpen(!isRejectedOpen)}
+            contentClassName="opacity-60"
+          >
+            {rejectedParticipants.map((participant) => (
+              <ParticipantCard key={participant.participationId} meetingId={meetingId} participant={participant} />
+            ))}
+          </ParticipantSection>
+        </>
+      )}
     </div>
   );
 };
