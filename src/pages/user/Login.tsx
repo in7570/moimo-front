@@ -12,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import * as z from "zod";
 // import { GoogleLogin } from "@react-oauth/google";
 import { useGoogleLogin, type CodeResponse } from "@react-oauth/google";
+import { toast } from "sonner";
 
 // zod schema 정의
 export const loginSchema = z.object({
@@ -217,8 +218,8 @@ const Login = () => {
                                 theme="filled_black"
                             />
                             */}
-                            <SiNaver size={24} color="#03C75A" />
-                            <SiKakaotalk size={24} color="#FFEB3B" />
+                            <SiNaver size={24} color="#03C75A" onClick={() => toast.error("준비 중인 서비스입니다.")} />
+                            <SiKakaotalk size={24} color="#FFEB3B" onClick={() => toast.error("준비 중인 서비스입니다.")} />
                         </div>
                     </div>
                 </CardContent>
