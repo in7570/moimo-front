@@ -14,21 +14,19 @@ import { LuLogOut } from "react-icons/lu";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "@/hooks/useAuthMutations";
-import { useQueryClient } from "@tanstack/react-query";
-import type { VerifyUserResponse } from "@/api/auth.api";
+import { useAuthQuery } from "@/hooks/useAuthQuery";
 
 export const ProfileDropdown = () => {
   const { nickname } = useAuthStore();
   const logoutMutation = useLogoutMutation();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();
     navigate("/");
   };
 
-  const userData = queryClient.getQueryData<VerifyUserResponse>(["authUser"]);
+  const { data: userData } = useAuthQuery();
   const userProfileImage = userData?.profileImage || defaultProfileImage;
 
   return (
