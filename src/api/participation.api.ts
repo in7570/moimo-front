@@ -1,8 +1,8 @@
-import type { Participant, ParticipationStatus } from "@/models/participation.model";
+import type { Participant } from "@/models/participation.model";
 import { apiClient } from "./client";
 
 
-// 내 모임 참여자 목록 조회 (API 권한 문제로 인한 임시 Mock 데이터 사용)
+// 내 모임 참여자 목록 조회
 export const getParticipants = async (meetingId: number) => {
     // TODO: 백엔드 API 권한 수정되면 실제 API 호출로 변경
     return new Promise<Participant[]>((resolve) => {
@@ -63,13 +63,42 @@ export const getParticipants = async (meetingId: number) => {
     */
 };
 
-// 모임 참여자 상태 일괄 업데이트
-export const updateParticipation = async (meetingId: number, updates: { participationId: number, status: ParticipationStatus }[]) => {
+// 개별 참여 승인
+export const approveParticipation = async (meetingId: number, participationId: number) => {
     try {
-        const response = await apiClient.put(`/meetings/${meetingId}/participations`, updates);
-        return response.data;
+        await apiClient.put(`/meetings/${meetingId}/participations/${participationId}/approve`);
     } catch (error) {
-        console.error("Error updating participation:", error);
+        console.error("Error approving participation:", error);
+        throw error;
+    }
+};
+
+// 개별 참여 거절
+export const rejectParticipation = async (meetingId: number, participationId: number) => {
+    try {
+        await apiClient.put(`/meetings/${meetingId}/participations/${participationId}/reject`);
+    } catch (error) {
+        console.error("Error rejecting participation:", error);
+        throw error;
+    }
+};
+
+// 전체 참여 승인
+export const approveAllParticipations = async (meetingId: number) => {
+    try {
+        await apiClient.put(`/meetings/${meetingId}/participations/approve-all`);
+    } catch (error) {
+        console.error("Error approving all participations:", error);
+        throw error;
+    }
+};
+
+// 승인 취소
+export const cancelParticipation = async (meetingId: number, participationId: number) => {
+    try {
+        await apiClient.put(`/meetings/${meetingId}/participations/${participationId}/cancel`);
+    } catch (error) {
+        console.error("Error cancelling participation:", error);
         throw error;
     }
 };
