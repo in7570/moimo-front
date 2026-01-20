@@ -141,11 +141,6 @@ const Login = () => {
                     <CardTitle className="text-2xl font-bold text-center text-foreground mb-2">모이모 로그인</CardTitle>
                     <CardDescription className="text-center">이메일과 비밀번호를 입력하여 로그인하세요</CardDescription>
                 </CardHeader>
-                {/* 테스트 계정 - 추후 제거 */}
-                <div className="flex flex-col items-center border border-muted-foreground bg-background rounded-[12px] p-2 gap-1 mb-6">
-                    <p className="text-[11px] font-medium text-muted-foreground italic">테스트 계정</p>
-                    <p className="text-[11px] text-muted-foreground italic">moimo@email.com / 12345678</p>
-                </div>
                 <CardContent className="flex flex-col gap-8 p-0">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="flex flex-col gap-6">
