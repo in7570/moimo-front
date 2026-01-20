@@ -3,7 +3,7 @@ import type { MyMeetingsResponse } from "@/api/me.api";
 import type { Interest } from "@/models/interest.model";
 import type { Meeting } from "@/models/meeting.model";
 import type {
-  Participant,
+  ParticipationDetail,
   ParticipationStatus,
 } from "@/models/participation.model";
 import { interestImageMap } from "@/utils/interestImageMap"; // Import interestImageMap
@@ -152,8 +152,8 @@ export const myMeetings: MyMeetingsResponse[] = Array.from(
   },
 );
 
-// 내모임 참여자
-export const mockParticipants: Record<number, Participant[]> =
+// 내모임 신청자
+export const mockParticipants: Record<number, ParticipationDetail[]> =
   myMeetings.reduce(
     (acc, meeting) => {
       acc[meeting.meetingId] = Array.from(
@@ -178,5 +178,5 @@ export const mockParticipants: Record<number, Participant[]> =
       );
       return acc;
     },
-    {} as Record<number, Participant[]>,
+    {} as Record<number, ParticipationDetail[]>,
   );

@@ -1,8 +1,8 @@
 import { http, HttpResponse, delay } from 'msw';
 import { httpUrl, myMeetings, mockParticipants } from './mockData';
 
-// 모임 참여자 목록 조회 핸들러
-const getParticipants = http.get(`${httpUrl}/meetings/:meetingId/participations`, async ({ params }) => {
+// 참여자 목록 조회 핸들러 (관리용 - status 포함)
+const getParticipationsManagement = http.get(`${httpUrl}/meetings/:meetingId/participations`, async ({ params }) => {
     await delay(1000);
 
     const { meetingId } = params;
@@ -13,9 +13,32 @@ const getParticipants = http.get(`${httpUrl}/meetings/:meetingId/participations`
         return HttpResponse.json({ message: "모임이 존재하지 않습니다." }, { status: 404 });
     }
 
-    const participants = mockParticipants[mid] || [];
+    const participations = mockParticipants[mid] || [];
 
-    // 명세서 상의 Response Body는 배열 자체임
+    return HttpResponse.json(participations, { status: 200 });
+});
+
+// 참여자 목록 조회 핸들러 (일반 사용자용 - isHost 포함)
+const getParticipantsList = http.get(`${httpUrl}/meetings/:meetingId/participants`, async ({ params }) => {
+    await delay(500);
+
+    const { meetingId } = params;
+    const mid = Number(meetingId);
+
+    const participations = mockParticipants[mid] || [];
+    const meeting = myMeetings.find(m => m.meetingId === mid);
+
+    // ParticipationDetail -> Participant 변환
+    const participants = participations
+        .filter(p => p.status === 'ACCEPTED')
+        .map(p => ({
+            userId: p.userId,
+            nickname: p.nickname,
+            profileImage: p.profileImage,
+            bio: p.bio,
+            isHost: p.userId === 1000 && meeting?.isHost ? true : false
+        }));
+
     return HttpResponse.json(participants, { status: 200 });
 });
 
@@ -142,7 +165,8 @@ const cancelRejectParticipation = http.put(`${httpUrl}/meetings/:meetingId/parti
 
 
 export const participationHandlers = [
-    getParticipants,
+    getParticipationsManagement,
+    getParticipantsList,
     approveParticipation,
     rejectParticipation,
     approveAllParticipations,
