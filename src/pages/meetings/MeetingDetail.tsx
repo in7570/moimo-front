@@ -92,7 +92,7 @@ function MeetingDetailPage() {
   useEffect(() => {
     if (descriptionRef.current && meetingDetail) {
       const height = descriptionRef.current.scrollHeight;
-      setShowExpandButton(height > 256); // 256px = max-h-64
+      setShowExpandButton(height > 192); // 192px = max-h-48
     }
   }, [meetingDetail]);
 
@@ -257,7 +257,7 @@ function MeetingDetailPage() {
           <CardContent className="p-6">
             <div
               ref={descriptionRef}
-              className={`text-base text-foreground whitespace-pre-wrap leading-relaxed transition-all duration-300 ${isDescriptionExpanded ? '' : 'max-h-64 overflow-y-auto'
+              className={`text-base text-foreground whitespace-pre-wrap leading-relaxed transition-all duration-300 ${isDescriptionExpanded ? "" : "max-h-48 overflow-hidden"
                 }`}
             >
               {meetingDetail.description}
