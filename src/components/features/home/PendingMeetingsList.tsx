@@ -24,16 +24,14 @@ function PendingMeetingsList() {
     );
   }
 
+  if (!isLoading && (!meetings || meetings.length === 0)) {
+    return null;
+  }
+
   return (
     <div className="w-full max-w-6xl mx-auto py-8">
       <div className="text-xl font-bold mb-4">{nickname} 님이 신청한 모임</div>
-      {meetings && meetings.length > 0 ? (
-        <MeetingList meetings={meetings} />
-      ) : (
-        <p className="text-center py-16 text-muted-foreground">
-          신청한 모임이 없습니다.
-        </p>
-      )}
+      <MeetingList meetings={meetings} />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import type {
   SortType,
 } from "@/api/meeting.api";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -48,7 +49,7 @@ export const MeetingFilterControls = ({
           value={filters.interestFilter}
           onValueChange={handleInterestFilterChange}
         >
-          <SelectTrigger className="w-[180px] bg-secondary text-primary-foreground">
+          <SelectTrigger className="w-[180px] bg-secondary/10 text-primary-foreground hover:bg-primary/20">
             <SelectValue placeholder="카테고리" />
           </SelectTrigger>
           <SelectContent>
@@ -80,7 +81,7 @@ export const MeetingFilterControls = ({
           value={filters.sort}
           onValueChange={(value) => handleSortChange(value as SortType)}
         >
-          <SelectTrigger className="w-[120px] bg-secondary text-primary-foreground">
+          <SelectTrigger className="w-[120px] bg-secondary/10 text-primary-foreground hover:bg-primary/20">
             <SelectValue placeholder="정렬" />
           </SelectTrigger>
           <SelectContent>
@@ -96,8 +97,12 @@ export const MeetingFilterControls = ({
         <Button
           variant="outline"
           onClick={() => handleFinishedFilterChange(!filters.finishedFilter)}
+          className={cn(
+            "min-w-[120px]",
+            !filters.finishedFilter && "bg-secondary/10 text-gray-900 border-primary/20 hover:bg-primary/20"
+          )}
         >
-          {filters.finishedFilter ? "마감된 모임 포함" : "모집중인 모임"}
+          {filters.finishedFilter ? "전체 모임 보기" : "모집 중인 모임"}
         </Button>
 
         {/* 개수 버튼 */}
@@ -105,7 +110,7 @@ export const MeetingFilterControls = ({
           value={limit.toString()}
           onValueChange={(value) => handleLimitChange(Number(value))}
         >
-          <SelectTrigger className="w-[110px] bg-secondary text-primary-foreground">
+          <SelectTrigger className="w-[110px] bg-secondary/10 text-primary-foreground hover:bg-primary/20">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

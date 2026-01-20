@@ -6,7 +6,7 @@ import MeetingList from "@/components/features/home/MeetingList";
 import PaginationComponent from "@/components/common/PaginationComponent";
 import { useSearchMeetingsQuery } from "@/hooks/useMeetingsQuery";
 import { usePagination } from "@/hooks/usePagination";
-import { Skeleton } from "@/components/ui/skeleton";
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 const MeetingsSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -64,32 +64,26 @@ const MeetingsSearchPage = () => {
   const meetings = meetingsResponse?.data || [];
 
   return (
-    <div className="space-y-4 bg-card">
+    <div className="space-y-4 bg-card pt-4">
       <h1 className="text-3xl font-bold p-4">모임 검색 결과</h1>
 
       <div className="px-4">
-        <form onSubmit={handleSearch} className="relative w-full max-w-lg mx-auto">
+        <form onSubmit={handleSearch} className="flex gap-3 w-full max-w-2xl pl-4 pb-4">
           <Input
             type="text"
             placeholder="관심있는 모임 제목을 검색해 보세요"
-            className="pl-4 pr-20"
+            className="flex-1 h-12 text-lg px-5 shadow-sm"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />
-          <Button type="submit" className="absolute top-0 right-0 h-full">
+          <Button type="submit" className="h-12 px-8 text-md font-meduium shrink-0 shadow-sm">
             찾기
           </Button>
         </form>
       </div>
 
       {isLoading && (
-        <div className="w-full max-w-6xl mx-auto py-8">
-          <div className="grid grid-cols-4 gap-4 justify-items-center">
-            {[...Array(limit)].map((_, index) => (
-              <Skeleton key={index} className="w-48 h-60 rounded-lg" />
-            ))}
-          </div>
-        </div>
+        <LoadingSpinner />
       )}
       {isError && (
         <p className="text-center text-red-500">
@@ -99,7 +93,7 @@ const MeetingsSearchPage = () => {
 
       {!isLoading && !isError && meetings.length > 0 && (
         <div className="max-w-6xl mx-auto">
-          <p className="px-4 pb-4 text-lg">
+          <p className="px-4 pb-8 text-lg">
             총 <span className="font-bold">{meetingsResponse?.meta.totalCount}</span>개의 모임을 찾았습니다.
           </p>
           <MeetingList meetings={meetings} />

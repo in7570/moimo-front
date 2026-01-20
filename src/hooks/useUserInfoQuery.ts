@@ -13,7 +13,7 @@ export const useUserInfoQuery = () => {
             const verifyUserInfo = await verifyUser();
             return verifyUserInfo;
         },
-        staleTime: 1000 * 60 * 30, // 30분
+        staleTime: 1000 * 60 * 5, // 5분
         retry: false,
     });
 }
@@ -26,7 +26,7 @@ export const useUserInfoByIdQuery = (userId: number) => {
             const response = await getUserInfoById(userId);
             return response.data;
         },
-        staleTime: 1000 * 60 * 30, // 30분
+        staleTime: 1000 * 60 * 5, // 5분
         retry: false,
         enabled: !!userId,  // userId가 0인 경우 쿼리 실행되지 않도록 
     });

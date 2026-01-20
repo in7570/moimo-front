@@ -7,9 +7,10 @@ function NewMeetingList() {
 
   return (
     <MeetingListSection
-      title="최근에 생긴 모임"
+      title="새로 개설된 모임 한눈에 보기"
       queryOptions={{ sort: "NEW", limit }}
       seeMoreHref="/meetings?sort=NEW"
+      hideIfEmpty={true}
     />
   );
 }

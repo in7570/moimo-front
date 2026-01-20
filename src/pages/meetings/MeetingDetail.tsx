@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Users } from "lucide-react";
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
-import { getMeetingById } from "@/api/meeting.api";
-import type { MeetingDetail } from "@/models/meeting.model";
 import moimoMeeting from "@/assets/images/moimo-meetings.png";
 import { useAuthStore } from "@/store/authStore";
 import LoginRequiredDialog from "@/components/features/login/LoginRequiredDialog";
@@ -13,6 +11,7 @@ import { toast } from "sonner";
 import CreateMeetingModal from "@/components/features/meetings/CreateMeetingModal";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import { useJoinMeetingMutation } from "@/hooks/useMeetingMutations";
+import { useMeetingQuery } from "@/hooks/useMeetingQuery";
 import { useMeQuery } from "@/hooks/useMeQuery";
 import MeetingActionButtons from "@/components/features/meetings/MeetingActionButtons";
 import { formatMeetingDate } from "@/utils/dateFormat";
@@ -20,7 +19,10 @@ import { useNavigate } from "react-router-dom";
 import { useDeleteMeetingDialog } from "@/hooks/useDeleteMeetingDialog";
 import { useInterestQuery } from "@/hooks/useInterestQuery";
 import LoadingSpinner from '@/components/common/LoadingSpinner';
-import { ParticipantsCard } from "@/components/features/meetings/ParticipantsCard";
+import { MeetingParticipantsCard } from "@/components/features/meetings/MeetingParticipantsCard";
+import { isMeetingClosed } from "@/utils/meetingUtils";
+import { cn } from "@/lib/utils";
+import { useParticipationsQuery } from "@/hooks/useParticipationsQuery";
 
 function MeetingDetailPage() {
   const { meetingId } = useParams<{ meetingId: string }>();
@@ -29,9 +31,7 @@ function MeetingDetailPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const [meetingDetail, setMeetingDetail] = useState<MeetingDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: meetingDetail, isLoading, error } = useMeetingQuery(Number(meetingId));
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showExpandButton, setShowExpandButton] = useState(false);
   const descriptionRef = useRef<HTMLDivElement>(null);
@@ -53,8 +53,8 @@ function MeetingDetailPage() {
   });
 
   // 내가 신청한/참가한 모임 목록 조회
-  const { meetings: pendingMeetings } = useMeQuery("joined", "pending", 1, 50, { enabled: isLoggedIn });
-  const { meetings: joinedMeetings } = useMeQuery("joined", "accepted", 1, 50, { enabled: isLoggedIn });
+  const { meetings: pendingMeetings, isLoading: isPendingLoading } = useMeQuery("joined", "pending", 1, 50, { enabled: isLoggedIn });
+  const { meetings: joinedMeetings, isLoading: isJoinedLoading } = useMeQuery("joined", "accepted", 1, 50, { enabled: isLoggedIn });
 
   // 카테고리 목록 조회 (이름 매핑용)
   const { data: interests } = useInterestQuery();
@@ -62,7 +62,11 @@ function MeetingDetailPage() {
   // 내 모임인지 확인
   const isHost = meetingDetail?.host.nickname === nickname;
 
-  // 내가 이미 신청한 모임인지 확인
+  // 마감 여부 확인
+  const isClosed = meetingDetail
+    ? isMeetingClosed(meetingDetail.currentParticipants, meetingDetail.maxParticipants, meetingDetail.meetingDate)
+    : false;
+
   useEffect(() => {
     if (meetingId && pendingMeetings) {
       const isAlreadyApplied = pendingMeetings.some(
@@ -72,28 +76,17 @@ function MeetingDetailPage() {
     }
   }, [meetingId, pendingMeetings]);
 
-  useEffect(() => {
-    const fetchMeetingDetail = async () => {
-      if (!meetingId) {
-        console.log("meetingId가 없습니다");
-        return;
-      }
-      try {
-        setIsLoading(true);
-        const response = await getMeetingById(meetingId);
-        setMeetingDetail(response); // response 자체가 MeetingDetail
-        setError(null);
-      } catch (err: any) {
-        console.error("API 에러:", err);
-        console.error("에러 응답:", err.response?.data);
-        setError(err.response?.data?.message || "모임 정보를 불러오는데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // 신청자 알림 토스트
+  const { data: participations } = useParticipationsQuery(Number(meetingId));
+  const hasNotifiedRef = useRef(false);
 
-    fetchMeetingDetail();
-  }, [meetingId]);
+  useEffect(() => {
+    if (isHost && participations?.some(p => p.status === 'PENDING') && !hasNotifiedRef.current) {
+      toast.info("새로운 모이미가 승인 요청 중입니다!");
+      hasNotifiedRef.current = true;
+    }
+  }, [isHost, participations]);
+
 
   // 설명 텍스트 높이 확인
   useEffect(() => {
@@ -137,7 +130,10 @@ function MeetingDetailPage() {
       setShowJoinConfirm(false);
     }
   };
-  if (isLoading) {
+  // 내 참여 정보 로딩 대기 (로그인 상태일 때만)
+  const isMeInfoLoading = isLoggedIn && (isPendingLoading || isJoinedLoading);
+
+  if (isLoading || isMeInfoLoading) {
     return (
       <LoadingSpinner />
     );
@@ -147,12 +143,11 @@ function MeetingDetailPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-lg text-destructive">
-          {error || "모임을 찾을 수 없습니다."}
+          {error ? (error as Error).message : "모임을 찾을 수 없습니다."}
         </div>
       </div>
     );
   }
-
 
 
   return (
@@ -163,18 +158,31 @@ function MeetingDetailPage() {
       <div className="flex-1 w-full max-w-5xl mx-auto pb-8 space-y-8 px-4 md:px-0">
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* 이미지 */}
-          <div className="w-full md:w-1/2 aspect-square rounded-2xl overflow-hidden bg-muted flex-shrink-0 shadow-sm border border-border/50">
+          <div className="relative w-full md:w-1/2 aspect-square rounded-2xl overflow-hidden bg-muted flex-shrink-0 shadow-sm border border-border/50">
+            {isClosed && (
+              <div className="absolute inset-0 z-10 bg-black/40 flex items-center justify-center">
+                <span className="bg-black/60 text-white px-3 py-1.5 rounded-full text-sm font-bold border border-white/20">
+                  마감됨
+                </span>
+              </div>
+            )}
             {meetingDetail.meetingImage ? (
               <img
                 src={meetingDetail.meetingImage}
                 alt={meetingDetail.title}
-                className="w-full h-full object-cover"
+                className={cn(
+                  "w-full h-full object-cover",
+                  isClosed && "grayscale-[0.5]"
+                )}
               />
             ) : (
               <img
                 src={moimoMeeting}
                 alt={meetingDetail.title}
-                className="w-full h-full object-cover"
+                className={cn(
+                  "w-full h-full object-cover",
+                  isClosed && "grayscale-[0.5]"
+                )}
               />
             )}
           </div>
@@ -234,6 +242,7 @@ function MeetingDetailPage() {
                 isPending={isPending}
                 isJoined={joinedMeetings?.some((m) => m.meetingId === Number(meetingId))}
                 isLoggedIn={isLoggedIn}
+                isClosed={isClosed}
                 onJoin={handleJoinMeeting}
                 onChat={() => navigate("/chats", { state: { meetingId: Number(meetingId) } })}
               />
@@ -265,7 +274,7 @@ function MeetingDetailPage() {
         </Card>
 
         {/* 참여자 */}
-        <ParticipantsCard
+        <MeetingParticipantsCard
           meetingId={Number(meetingId)}
           host={meetingDetail.host}
           currentParticipants={meetingDetail.currentParticipants || 1}
@@ -302,6 +311,7 @@ function MeetingDetailPage() {
         isPending={isPending}
         isJoined={joinedMeetings?.some((m) => m.meetingId === Number(meetingId))}
         isLoggedIn={isLoggedIn}
+        isClosed={isClosed}
         onJoin={handleJoinMeeting}
         onChat={() => navigate("/chats", { state: { meetingId: Number(meetingId) } })}
       />

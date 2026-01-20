@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import FormField from "@components/common/FormField";
 import { useCreateMeetingMutation, useUpdateMeetingMutation } from "@/hooks/useMeetingMutations";
@@ -44,9 +45,11 @@ interface CreateMeetingModalProps {
 }
 
 function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalProps) {
+  const navigate = useNavigate();
   const { data: interests } = useInterestQuery();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isFormReady, setIsFormReady] = useState(false);
 
   const { data: meetingDetail, isLoading: isMeetingLoading } = useMeetingQuery(
     open && meeting ? ('meetingId' in meeting ? meeting.meetingId : (meeting as { id: number }).id) : undefined
@@ -91,21 +94,45 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
   // 수정 모드일 때 데이터 로드
   useEffect(() => {
     if (open) {
-      if (meeting && meetingDetail) {
-        reset({
-          title: meetingDetail.title,
-          description: meetingDetail.description || "",
-          interestId: meetingDetail.interestId,
-          maxParticipants: meetingDetail.maxParticipants,
-          meetingDate: meetingDetail.meetingDate ? new Date(meetingDetail.meetingDate) : undefined,
-          meetingHour: "12",
-          meetingMinute: "00",
-          meetingPeriod: "PM",
-          address: meetingDetail.location.address,
-        });
-        setPreviewImage(meetingDetail.meetingImage || null);
-      } else if (!meeting) {
-        // 새 모임 생성 
+      if (meeting) {
+        // 수정 모드: 데이터가 로드되면 폼 초기화
+        if (meetingDetail) {
+          // 시간 파싱
+          let date = new Date();
+          let hourStr = "12";
+          let minuteStr = "00";
+          let periodVal: "AM" | "PM" = "PM";
+
+          if (meetingDetail.meetingDate) {
+            date = new Date(meetingDetail.meetingDate);
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            periodVal = hour >= 12 ? "PM" : "AM";
+            const displayHour = hour % 12 || 12;
+
+            hourStr = String(displayHour);
+            minuteStr = String(minute).padStart(2, "0");
+          }
+
+          reset({
+            title: meetingDetail.title,
+            description: meetingDetail.description || "",
+            interestId: meetingDetail.interestId,
+            maxParticipants: meetingDetail.maxParticipants,
+            meetingDate: meetingDetail.meetingDate ? new Date(meetingDetail.meetingDate) : undefined,
+            meetingHour: hourStr,
+            meetingMinute: minuteStr,
+            meetingPeriod: periodVal,
+            address: meetingDetail.location.address,
+          });
+          setPreviewImage(meetingDetail.meetingImage || null);
+          setIsFormReady(true);
+        } else {
+          // 데이터 로딩 중
+          setIsFormReady(false);
+        }
+      } else {
+        // 새 모임 생성: 즉시 준비 완료
         reset({
           title: "",
           description: "",
@@ -118,7 +145,10 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
           address: "",
         });
         setPreviewImage(null);
+        setIsFormReady(true);
       }
+    } else {
+      setIsFormReady(false);
     }
   }, [open, meeting, meetingDetail, interests, reset]);
 
@@ -138,7 +168,9 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
       return;
     }
 
-    const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(file.name);
+    // Mac NFD 파일명 정규화
+    const normalizedFileName = file.name.normalize('NFC');
+    const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(normalizedFileName);
     if (hasKorean) {
       toast.error("이미지 파일명이 한글인 경우 업로드할 수 없어요", {
         description: "파일명을 영문으로 변경해주세요"
@@ -208,8 +240,14 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
       formData.append("maxParticipants", String(data.maxParticipants));
 
       // 명세 양식 (YYYY-MM-DDTHH:mm:ss) 맞춤 (초 단위까지 포함)
-      const isoString = combinedDateTime.toISOString();
-      const formattedDate = isoString.split('.')[0];
+      // 명세 양식 (YYYY-MM-DDTHH:mm:ss) 맞춤 - 로컬 시간 기준 유지
+      const year = combinedDateTime.getFullYear();
+      const month = String(combinedDateTime.getMonth() + 1).padStart(2, '0');
+      const day = String(combinedDateTime.getDate()).padStart(2, '0');
+      const hours = String(combinedDateTime.getHours()).padStart(2, '0');
+      const minutes = String(combinedDateTime.getMinutes()).padStart(2, '0');
+      const seconds = String(combinedDateTime.getSeconds()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
       formData.append("meetingDate", formattedDate);
 
       formData.append("interestId", String(data.interestId));
@@ -234,9 +272,10 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
       } else {
         await createMeetingMutation.mutateAsync(formData);
         toast.success("모임이 생성되었습니다!", {
-          description: "마이페이지 - 내모임에서 확인해보세요!"
+          description: "마이페이지 - 내 모임에서 확인할 수 있습니다!"
         });
         onOpenChange(false);
+        navigate("/");
       }
     } catch (error: any) {
       console.error("Submission error:", error);
@@ -271,13 +310,15 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
             </div>
           </DialogHeader>
 
-          <div className="overflow-y-auto px-6 pb-6 scrollbar-hide">
-            {isMeetingLoading ? (
+          {(isMeetingLoading || !isFormReady) ? (
+            <div className="overflow-y-auto px-6 pb-6 scrollbar-hide">
               <div className="flex h-[400px] items-center justify-center">
                 <LoadingSpinner />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 scrollbar-hide">
                 {/* 모임명 */}
                 <FormField label="모임명" htmlFor="title">
                   <Input
@@ -406,32 +447,32 @@ function CreateMeetingModal({ open, onOpenChange, meeting }: CreateMeetingModalP
                   </div>
                   {errors.maxParticipants && <p className="text-xs text-red-500 mt-1">{errors.maxParticipants.message}</p>}
                 </FormField>
+              </div>
 
-                {/* 승인 버튼 */}
-                <div className="flex gap-3 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => onOpenChange(false)}
-                    className="flex-1 h-12"
-                    disabled={createMeetingMutation.isPending || updateMeetingMutation.isPending}
-                  >
-                    취소
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 h-12 bg-primary hover:bg-primary/90 text-primary-foreground"
-                    disabled={!isValid || createMeetingMutation.isPending || updateMeetingMutation.isPending}
-                  >
-                    {meeting ?
-                      (updateMeetingMutation.isPending ? "수정 중..." : "수정하기") :
-                      (createMeetingMutation.isPending ? "신청 중..." : "신청하기")
-                    }
-                  </Button>
-                </div>
-              </form>
-            )}
-          </div>
+              {/* Fixed Footer Buttons */}
+              <div className="shrink-0 px-6 py-4 border-t bg-card flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  className="flex-1 h-12"
+                  disabled={createMeetingMutation.isPending || updateMeetingMutation.isPending}
+                >
+                  취소
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 h-12 bg-primary hover:bg-primary/90 text-primary-foreground"
+                  disabled={!isValid || createMeetingMutation.isPending || updateMeetingMutation.isPending}
+                >
+                  {meeting ?
+                    (updateMeetingMutation.isPending ? "수정 중..." : "수정하기") :
+                    (createMeetingMutation.isPending ? "신청 중..." : "신청하기")
+                  }
+                </Button>
+              </div>
+            </form>
+          )}
         </DialogContent>
       </Dialog>
 
